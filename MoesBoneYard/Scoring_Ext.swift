@@ -1,0 +1,1237 @@
+//
+//  Scoring_Ext.swift
+//  Moe's Bone Yard
+//
+//  Created by Mark Davis on 5/19/19.
+//  Copyright © 2019 Mark Davis. All rights reserved.
+//
+
+import SpriteKit
+import UIKit
+
+extension GameScene {
+	func rollDice(dice: [Dice]) -> RollResult {
+		var result: RollResult?
+		dieTotal = 0
+		dieValues.removeAll()
+		let currentDice = dice
+		animateDice(isComplete: handlerBlock)
+		for die in currentDice {
+			die.value = Int(arc4random_uniform(6)+1)
+			dieValues.append(Double(die.value))
+			for value in dieValues {
+				switch value {
+				case 1:
+					die.texture = SKTexture(imageNamed: "Die1")
+					die.currentTexture = die.texture!
+				case 2:
+					die.texture = SKTexture(imageNamed: "Die2")
+					die.currentTexture = die.texture!
+				case 3:
+					die.texture = SKTexture(imageNamed: "Die3")
+					die.currentTexture = die.texture!
+				case 4:
+					die.texture = SKTexture(imageNamed: "Die4")
+					die.currentTexture = die.texture!
+				case 5:
+					die.texture = SKTexture(imageNamed: "Die5")
+					die.currentTexture = die.texture!
+				case 6:
+					die.texture = SKTexture(imageNamed: "Die6")
+					die.currentTexture = die.texture!
+				default:
+					break
+				}
+			}
+		}
+		let dieTotal = getDieTotal()
+		self.dieTotal = Int(dieTotal)
+		result = evaluateRoll()
+		return result!
+	}
+
+	func animateDice(isComplete: (Bool) -> Void) {
+		let rollDie1 = SKAction(named: "RollDie1")!
+		let rollDie2 = SKAction(named: "RollDie2")!
+		let wait = SKAction.wait(forDuration: 0.15)
+
+		let diceRoll1 = SKAction.run {
+			self.die1.run(rollDie1)
+		}
+
+		let diceRoll2 = SKAction.run {
+			self.die2.run(rollDie2)
+		}
+
+		let setFace = SKAction.run {
+			self.die1.texture = self.die1.currentTexture
+			self.die2.texture = self.die2.currentTexture
+		}
+
+		let dieRollSeq = SKAction.sequence([diceRoll1, wait, diceRoll2])
+		let setDieFace = SKAction.sequence([setFace])
+
+		let seq = SKAction.sequence([dieRollSeq, setDieFace])
+		self.run(seq)
+		isComplete(true)
+	}
+
+	func evaluateRoll() -> RollResult {
+		var result: RollResult?
+		if comeOutRoll {
+			comeOutRoll = false
+			result = evaluateComeOutRoll()
+		} else {
+			result = evaluatePointRoll()
+		}
+		return result!
+	}
+
+	func processComeOutRollBets() {
+		for placedBet in placedBets {
+			var currentPlacedBet = placedBet
+			for (bet,chip) in placedBet {
+				let currentBet = bet
+				let currentChip = chip
+				switch currentBet {
+				case passLineBet, comeBet:
+					if craps.contains(Double(dieTotal)) {
+						currentPlacedBet[currentBet] = nil
+						removeBet(betName: currentBet.name!)
+					}
+				case dontPassBet, dontComeBet, anyCrapsBet:
+					if craps.contains(Double(dieTotal)) {
+						currentPlacedBet[currentBet] = nil
+						chipTotal += currentChip.value
+						chipTotal += (currentChip.value * currentBet.odds)
+						removeBet(betName: currentBet.name!)
+					}
+				case snakeEyesBet:
+					if die1.value == 1 && die2.value == 1 {
+						currentPlacedBet[currentBet] = nil
+						chipTotal += currentChip.value
+						chipTotal += (currentChip.value * currentBet.odds)
+						removeBet(betName: currentBet.name!)
+					}
+				case craps3Bet:
+					if (die1.value == 1 || die1.value == 2) && (die2.value == 1 || die2.value == 2) {
+						currentPlacedBet[currentBet] = nil
+						chipTotal += currentChip.value
+						chipTotal += (currentChip.value * currentBet.odds)
+						removeBet(betName: currentBet.name!)
+					}
+				case fieldBet:
+					currentPlacedBet[currentBet] = nil
+					chipTotal += currentChip.value
+					if dieTotal == 2 || dieTotal == 12 {
+						chipTotal += (currentChip.value * currentBet.odds) * 2
+					} else {
+						chipTotal += (currentChip.value * currentBet.odds)
+					}
+				case fours, fives, sixes, eights, nines, tens, hardSixBet, hardFourBet, hardTenBet, hardEightBet:
+					if die1.value == 2 && die2.value == 2 {
+						currentPlacedBet[currentBet] = nil
+						placedBets.append([currentBet:currentChip])
+						chipTotal += currentChip.value
+						chipTotal += (currentChip.value * currentBet.odds)
+						fallthrough
+					} else if die1.value == 3 && die2.value == 3 {
+						currentPlacedBet[currentBet] = nil
+						placedBets.append([currentBet:currentChip])
+						chipTotal += currentChip.value
+						chipTotal += (currentChip.value * currentBet.odds)
+						fallthrough
+					} else if die1.value == 4 && die2.value == 4 {
+						currentPlacedBet[currentBet] = nil
+						placedBets.append([currentBet:currentChip])
+						chipTotal += currentChip.value
+						chipTotal += (currentChip.value * currentBet.odds)
+					} else if die1.value == 5 && die2.value == 5 {
+						currentPlacedBet[currentBet] = nil
+						placedBets.append([currentBet:currentChip])
+						chipTotal += currentChip.value
+						chipTotal += (currentChip.value * currentBet.odds)
+					}
+				default:
+					break
+				}
+			}
+		}
+	}
+
+	func evaluateComeOutRoll() -> RollResult {
+		var result: RollResult?
+		result = .Push
+		for placedBet in placedBets {
+			var currentBet = placedBet
+			for (bet,chip) in placedBet {
+				let theBet = bet
+				let theChip = chip
+				switch theBet {
+				case passLineBet, comeBet:
+					if craps.contains(Double(dieTotal)) {
+						result = .Loss
+						currentBet[theBet] = nil
+						removeBet(betName: theBet.name!)
+						comeOutRoll = true
+					} else if wins.contains(Double(dieTotal)) {
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: theBet.name!)
+						comeOutRoll = true
+					} else if points.contains(Double(dieTotal)) {
+						thePoint = dieTotal
+						currentBet[passLineBet] = nil
+						placeGamePuck()
+					}
+				case dontPassBet, dontComeBet, anyCrapsBet:
+					if craps.contains(Double(dieTotal)) {
+						result = .Loss
+						currentBet[theBet] = nil
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: theBet.name!)
+					} else {
+						removeBet(betName: theBet.name!)
+					}
+				case snakeEyesBet:
+					if die1.value == 1 && die2.value == 1 {
+						currentBet[theBet] = nil
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: theBet.name!)
+					} else {
+						removeBet(betName: theBet.name!)
+					}
+				case craps3Bet:
+					if (die1.value == 1 || die1.value == 2) && (die2.value == 1 || die2.value == 2) {
+						currentBet[theBet] = nil
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: theBet.name!)
+					} else {
+						removeBet(betName: theBet.name!)
+					}
+				case fieldBet:
+					result = .Win
+					currentBet[theBet] = nil
+					chipTotal += theChip.value
+					if dieTotal == 2 || dieTotal == 12 {
+						chipTotal += (theChip.value * theBet.odds) * 2
+					} else {
+						chipTotal += (theChip.value * theBet.odds)
+					}
+				case fours, fives, sixes, eights, nines, tens, hardSixBet, hardFourBet, hardTenBet, hardEightBet:
+					result = .Point
+					if die1.value == 2 && die2.value == 2 {
+						currentBet[theBet] = nil
+						placedBets.append([theBet:theChip])
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						fallthrough
+					} else if die1.value == 3 && die2.value == 3 {
+						currentBet[theBet] = nil
+						placedBets.append([theBet:theChip])
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						fallthrough
+					} else if die1.value == 4 && die2.value == 4 {
+						currentBet[theBet] = nil
+						placedBets.append([theBet:theChip])
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+					} else if die1.value == 5 && die2.value == 5 {
+						currentBet[theBet] = nil
+						placedBets.append([theBet:theChip])
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+					}
+				default:
+					break
+				}
+			}
+		}
+		return result!
+	}
+
+	func evaluatePointRoll() -> RollResult {
+		let pointBet = getPointBet()
+		var theBet = Bet()
+		var theChip = Chip()
+		var result: RollResult?
+		result = .Push
+		switch dieTotal {
+		case thePoint:
+			print("Winner: Point Matched")
+			gamePuck.texture = SKTexture(imageNamed: "OffPuck")
+			gamePuck.position = gamePuck.homePosition
+			chipTotal += theChip.value
+			chipTotal += (theChip.value * theBet.odds)
+			passLineBet.removeAllChildren()
+			comeOutRoll = true
+			thePoint = 0
+			result = .Win
+		case 2,3:
+			for placedBet in placedBets {
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						removeBet(betName: betName!)
+					case "DontComeBet":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						theBet.state = .On
+						removeBet(betName: betName!)
+					case "AnyCrapsBet":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+					case "SnakeEyesBet":
+						if die1.value == 1 && die2.value == 1 {
+							chipTotal += theChip.value
+							chipTotal += (theChip.value * theBet.odds)
+							removeBet(betName: betName!)
+						}
+					case "Craps3Bet":
+						if (die1.value == 1 || die1.value == 3) && (die2.value == 1 || die2.value == 3) {
+							chipTotal += theChip.value
+							chipTotal += (theChip.value * theBet.odds)
+							removeBet(betName: betName!)
+						}
+					case "FieldBet":
+						if dieTotal == 2 || dieTotal == 12 {
+							chipTotal += theChip.value
+							chipTotal += (theChip.value * theBet.odds) * 2
+							removeBet(betName: betName!)
+						} else {
+							switch dieTotal {
+							case 3,4,9,10,11:
+								chipTotal += theChip.value
+								chipTotal += (theChip.value * theBet.odds)
+								removeBet(betName: betName!)
+							default:
+								break
+							}
+						}
+					default:
+						break
+					}
+				}
+			}
+			result = .Push
+		case 4:
+			for placedBet in placedBets {
+				var currentBet = placedBet
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						placedBets.append([theBet:theChip])
+						currentBet[theBet] = nil
+					case "DontComeBet":
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "Fours":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * pointBet.odds)
+						removeBet(betName: pointBet.name!)
+						currentBet[pointBet] = nil
+					case "HardFourBet":
+						if die1.value == 2 && die2.value == 2 {
+							chipTotal += theChip.value
+							chipTotal += (theChip.value * theBet.odds)
+							removeBet(betName: betName!)
+							currentBet[theBet] = nil
+						}
+					default:
+						break
+					}
+				}
+			}
+		case 5:
+			for placedBet in placedBets {
+				var currentBet = placedBet
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						let children = pointBet.children
+						if !children.isEmpty {
+							for child in children {
+								if child == fives {
+									chipTotal += theChip.value
+									chipTotal += (theChip.value * pointBet.odds)
+									removeBet(betName: pointBet.name!)
+								}
+							}
+						}
+						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						placedBets.append([theBet:theChip])
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "DontComeBet":
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "Fives":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					default:
+						break
+					}
+				}
+			}
+		case 6:
+			for placedBet in placedBets {
+				var currentBet = placedBet
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						let children = pointBet.children
+						if !children.isEmpty {
+							for child in children {
+								if child == sixes {
+									chipTotal += theChip.value
+									chipTotal += (theChip.value * pointBet.odds)
+									removeBet(betName: pointBet.name!)
+								}
+							}
+						}
+						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						placedBets.append([theBet:theChip])
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "DontComeBet":
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "Sixes":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "HardSixBet":
+						if die1.value == 3 && die2.value == 3 {
+							chipTotal += theChip.value
+							chipTotal += (theChip.value * theBet.odds)
+							removeBet(betName: betName!)
+							currentBet[theBet] = nil
+						}
+					default:
+						break
+					}
+				}
+			}
+		case 8:
+			for placedBet in placedBets {
+				var currentBet = placedBet
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						let children = pointBet.children
+						if !children.isEmpty {
+							for child in children {
+								if child == eights {
+									chipTotal += theChip.value
+									chipTotal += (theChip.value * pointBet.odds)
+									removeBet(betName: pointBet.name!)
+								}
+							}
+						}
+						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						placedBets.append([theBet:theChip])
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "DontComeBet":
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "Eights":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "HardEightBet":
+						if die1.value == 4 && die2.value == 4 {
+							chipTotal += theChip.value
+							chipTotal += (theChip.value * theBet.odds)
+							removeBet(betName: betName!)
+							currentBet[theBet] = nil
+						}
+					default:
+						break
+					}
+				}
+			}
+		case 9:
+			for placedBet in placedBets {
+				var currentBet = placedBet
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						let children = pointBet.children
+						if !children.isEmpty {
+							for child in children {
+								if child == nines {
+									chipTotal += theChip.value
+									chipTotal += (theChip.value * pointBet.odds)
+									removeBet(betName: pointBet.name!)
+								}
+							}
+						}
+						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						placedBets.append([theBet:theChip])
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "DontComeBet":
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "Nines":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					default:
+						break
+					}
+				}
+			}
+		case 10:
+			for placedBet in placedBets {
+				var currentBet = placedBet
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						let children = pointBet.children
+						if !children.isEmpty {
+							for child in children {
+								if child == tens {
+									chipTotal += theChip.value
+									chipTotal += (theChip.value * pointBet.odds)
+									removeBet(betName: pointBet.name!)
+								}
+							}
+						}
+						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						placedBets.append([theBet:theChip])
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "DontComeBet":
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "Tens":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "HardTenBet":
+						if die1.value == 5 && die2.value == 5 {
+							chipTotal += theChip.value
+							chipTotal += (theChip.value * theBet.odds)
+							removeBet(betName: betName!)
+							currentBet[theBet] = nil
+						}
+					default:
+						break
+					}
+				}
+			}
+		result = .Win
+		case 7:
+			var currentBet = [Bet:Chip]()
+			print("Craps 7")
+			comeOutRoll = true
+			for placedBet in placedBets {
+				currentBet = placedBet
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "DontComeBet":
+						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "SevenBet":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					default:
+						break
+					}
+				}
+			}
+			passLineBet.removeAllChildren()
+			currentBet[passLineBet] = nil
+			gamePuck.texture = SKTexture(imageNamed: "OffPuck")
+			gamePuck.position = gamePuck.homePosition
+			result = .Loss
+		case 11:
+			for placedBet in placedBets {
+				var currentBet = placedBet
+				for (bet,chip) in placedBet {
+					theBet = bet
+					theChip = chip
+					let betName = theBet.name
+					switch betName {
+					case "ComeBet":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "DontComeBet":
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					case "ElevenBet":
+						chipTotal += theChip.value
+						chipTotal += (theChip.value * theBet.odds)
+						removeBet(betName: betName!)
+						currentBet[theBet] = nil
+					default:
+						break
+					}
+				}
+			}
+			result = .Push
+		default:
+			break
+		}
+	return result!
+	}
+
+	func clearBetsButtonTouched() {
+		var theBet = Bet()
+		var theChip = Chip()
+		for placedBet in placedBets {
+			for (bet, chip) in placedBet {
+				theBet = bet
+				theChip = chip
+				removeBet(betName: theBet.name!)
+			}
+		}
+		chipTotal += theChip.value
+		placedBets.removeAll()
+		resetPlacedBetPositions()
+	}
+
+	func removeBet(betName: String) {
+		for bet in availableBets where bet.name == betName {
+			bet.removeAllChildren()
+			for bet in placedBets {
+				var id = 0
+				for (currentBet, _) in bet where currentBet.name == betName {
+					placedBets.remove(at: id)
+				}
+				id += 1
+			}
+		}
+	}
+
+	func placeBet(bet: [Bet:Chip]) {
+		let currentBet = bet
+		var theBet = Bet()
+		var theChip = Chip()
+
+		let validBet = validatePlacedBet(bet: currentBet)
+		for (bet, chip) in currentBet {
+			theBet = bet
+			theChip = chip
+		}
+
+		if validBet {
+			chipTotal -= theChip.value
+			for bet in availableBets where bet.name == theBet.name {
+				selectedBet = bet
+				print("Selected Bet: \((selectedBet.name)!)")
+				print("Selected Chip: \(theChip.value)")
+			}
+			placedBets.append(currentBet)
+			moveChipToBetLocation(bet: theBet, chip: theChip)
+		} else {
+			print("invalid bet")
+		}
+	}
+
+	func validatePlacedBet(bet: [Bet:Chip]) -> Bool {
+		let currentBet = bet
+		var theBet = Bet()
+
+		for (bet, _) in currentBet {
+			theBet = bet
+		}
+
+		var result = Bool()
+		if !comeOutRoll {
+			if theBet.name == "PassLineBet" || theBet.name == "DontPassBet" {
+				result = false
+			} else {
+				result = true
+			}
+		} else {
+			if theBet.name == "PassLineBet" || theBet.name == "DontPassBet" {
+				result = true
+			}
+		}
+		return result
+	}
+
+	func getDieTotal() -> Double {
+		var result: Double = 0
+		for value in dieValues {
+			result += value
+		}
+		return result
+	}
+
+	func chipTouched(name: String) {
+		let chipName = name
+		for chip in chips where chip.name == chipName {
+			selectedChip = chip
+			selectedChipValue = selectedChip.value
+			selectedChipTexture = selectedChip.texture!
+			print("Selected Chip: \(selectedChip.value)")
+		}
+	}
+
+	func moveChipToBetLocation(bet:
+		Bet, chip: Chip) {
+
+		let currentBet = bet
+		let currentChip = chip
+
+		var newPosition = CGPoint()
+		switch dieTotal {
+		case 4:
+			 newPosition = fours.placedBetPosition
+		case 5:
+			newPosition = fives.placedBetPosition
+		case 6:
+			newPosition = sixes.placedBetPosition
+		case 8:
+			newPosition = eights.placedBetPosition
+		case 9:
+			newPosition = nines.placedBetPosition
+		case 10:
+			newPosition = tens.placedBetPosition
+		default:
+			break
+		}
+
+		newPosition = CGPoint(x: newPosition.x + 0.25, y: newPosition.y + 1)
+		let placedBet = SKSpriteNode(texture: currentChip.texture, size: CGSize(width: 24, height: 24))
+		placedBet.position = newPosition
+		placedBet.name = currentBet.name
+		currentBet.placedBetPosition = newPosition
+		currentBet.addChild(placedBet)
+		placedBet.zPosition = currentBet.zPosition
+		currentBet.zPosition += 1
+
+		print("dieTotal: \(dieTotal), currentBet: \(currentBet.name!), currentChip: \(currentChip.name!)")
+	}
+
+	func resetPlacedBetPositions() {
+		for bet in availableBets {
+			bet.placedBetPosition = CGPoint(x: 0, y: 0)
+		}
+	}
+
+	func placeGamePuck() {
+		gamePuck.texture = SKTexture(imageNamed: "OnPuck")
+		switch dieTotal {
+		case 4:
+			gamePuck.position = fours.puckPosition
+		case 5:
+			gamePuck.position = fives.puckPosition
+		case 6:
+			gamePuck.position = sixes.puckPosition
+		case 8:
+			gamePuck.position = eights.puckPosition
+		case 9:
+			gamePuck.position = nines.puckPosition
+		case 10:
+			gamePuck.position = tens.puckPosition
+		default:
+			break
+		}
+	}
+
+	func getOddsOnBet(bet: Bet) -> Double {
+		var odds = Double()
+		for bets in availableBets where bets.name == bet.name {
+			odds = bets.odds
+		}
+		return odds
+	}
+
+	func handleLostBets() {
+		print("Handle Lost Bets")
+		if comeOutRoll {
+			for placedBet in placedBets {
+				var id = 0
+				for (bet, _) in placedBet where bet.name == "PassLineBet" {
+					placedBets.remove(at: id)
+					passLineBet.removeAllChildren()
+				}
+				id += 1
+			}
+
+			for placedBet in placedBets {
+				var id = 0
+				for (bet, chip) in placedBet where bet.name == "DontPassBet" {
+					chipTotal += chip.value
+					placedBets.remove(at: id)
+					dontPassBet.removeAllChildren()
+				}
+				id += 1
+			}
+		} else {
+			for placedBet in placedBets {
+				var id = 0
+				for (bet, _) in placedBet where bet.name == "PassLineBet" {
+					placedBets.remove(at: id)
+					passLineBet.removeAllChildren()
+				}
+				id += 1
+			}
+
+			for placedBet in placedBets {
+				var id = 0
+				for (bet, chip) in placedBet where bet.name == "DontPassBet" {
+					chipTotal += chip.value
+					placedBets.remove(at: id)
+					dontPassBet.removeAllChildren()
+				}
+				id += 1
+			}
+		}
+	}
+
+	func handleWinningBets() {
+		print("Handle Winning Bets")
+		if comeOutRoll {
+			for placedBet in placedBets {
+				var id = 0
+				for (bet, chip) in placedBet where bet.name == "PassLineBet" {
+					chipTotal += chip.value
+					placedBets.remove(at: id)
+					passLineBet.removeAllChildren()
+				}
+				id += 1
+			}
+
+			for placedBet in placedBets {
+				var id = 0
+				for (bet, chip) in placedBet where bet.name == "DontComeBet" {
+					chipTotal += chip.value
+					placedBets.remove(at: id)
+					dontPassBet.removeAllChildren()
+				}
+				id += 1
+			}
+
+		} else {
+			for placedBet in placedBets {
+				var id = 0
+				for (bet, _) in placedBet where bet.name == "PassLineBet" {
+					placedBets.remove(at: id)
+					passLineBet.removeAllChildren()
+				}
+				id += 1
+			}
+
+			for placedBet in placedBets {
+				var id = 0
+				for (bet, chip) in placedBet where bet.name == "DontPassBet" {
+					chipTotal += chip.value
+					placedBets.remove(at: id)
+					dontPassBet.removeAllChildren()
+				}
+				id += 1
+			}
+		}
+	}
+
+	func handlePointRoll() {
+		print("Handle Point Roll")
+
+	}
+
+	func handleBets() {
+		var result = Double()
+		for placedBet in placedBets {
+			var id = 0
+			for (bet, chip) in placedBet {
+				let chipValue = chip.value
+				let betName = bet.name
+				let betOdds = bet.odds
+
+				switch betName {
+				case "Fours":
+					result = processBet(currentBet: placedBet)
+					if comeOutRoll {
+						comeOutRoll = false
+						thePoint = dieTotal
+					} else if thePoint == dieTotal {
+						chipTotal += (chipValue * betOdds)
+						comeOutRoll = true
+						thePoint = 0
+						placedBets.remove(at: id)
+					}
+
+				case "Fives":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "Sixes":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "Eights":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "Nines":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "Tens":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "FoursTopBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "FivesTopBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "SixesTopBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "EightsTopBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "NinesTopBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "TensTopBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "ComeBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "DontComeBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+				case "PassLineBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "DontPassBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "FieldBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "SevenBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "ElevenBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "HardFourBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+				case "HardSixBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "HardTenBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "SnakeEyesBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "BoxCarsBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "AnyCrapsBet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				case "Craps3Bet":
+				result = processBet(currentBet: placedBet)
+				if comeOutRoll {
+					comeOutRoll = false
+					thePoint = dieTotal
+				} else if thePoint == dieTotal {
+					chipTotal += (chipValue * betOdds)
+					comeOutRoll = true
+					thePoint = 0
+					placedBets.remove(at: id)
+					}
+
+				default:
+					break
+				}
+				chipTotal += result
+			}
+			id += 1
+		}
+	}
+
+	func processBet(currentBet: [Bet:Chip]) -> Double {
+
+		var theChip = Chip()
+		var theBet = Bet()
+
+		for (bet, chip) in currentBet {
+			theChip = chip
+			theBet = bet
+		}
+
+		var result: Double = Double()
+		if comeOutRoll {
+			if dieTotal == 7 || dieTotal == 11 {
+				result += (theChip.value * theBet.odds)
+			}
+			comeOutRoll = false
+		} else if thePoint == dieTotal {
+			result += (Double(theChip.value) * theBet.odds)
+			comeOutRoll = true
+			thePoint = 0
+		}
+		return result
+	}
+}
