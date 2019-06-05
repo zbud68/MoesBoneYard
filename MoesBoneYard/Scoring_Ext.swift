@@ -10,8 +10,8 @@ import SpriteKit
 import UIKit
 
 extension GameScene {
-	func rollDice(dice: [Dice]) -> RollResult {
-		var result: RollResult?
+	func rollDice(dice: [Dice]) {
+
 		dieTotal = 0
 		dieValues.removeAll()
 		let currentDice = dice
@@ -46,8 +46,8 @@ extension GameScene {
 		}
 		let dieTotal = getDieTotal()
 		self.dieTotal = Int(dieTotal)
-		result = evaluateRoll()
-		return result!
+		evaluateRoll()
+
 	}
 
 	func animateDice(isComplete: (Bool) -> Void) {
@@ -76,15 +76,15 @@ extension GameScene {
 		isComplete(true)
 	}
 
-	func evaluateRoll() -> RollResult {
-		var result: RollResult?
+	func evaluateRoll() {
+
 		if comeOutRoll {
 			comeOutRoll = false
-			result = evaluateComeOutRoll()
+			evaluateComeOutRoll()
 		} else {
-			result = evaluatePointRoll()
+			evaluatePointRoll()
 		}
-		return result!
+
 	}
 
 	func processComeOutRollBets() {
@@ -159,9 +159,9 @@ extension GameScene {
 		}
 	}
 
-	func evaluateComeOutRoll() -> RollResult {
-		var result: RollResult?
-		result = .Push
+	func evaluateComeOutRoll() {
+
+
 		for placedBet in placedBets {
 			var currentBet = placedBet
 			for (bet,chip) in placedBet {
@@ -170,7 +170,7 @@ extension GameScene {
 				switch theBet {
 				case passLineBet, comeBet:
 					if craps.contains(Double(dieTotal)) {
-						result = .Loss
+
 						currentBet[theBet] = nil
 						removeBet(betName: theBet.name!)
 						comeOutRoll = true
@@ -186,7 +186,7 @@ extension GameScene {
 					}
 				case dontPassBet, dontComeBet, anyCrapsBet:
 					if craps.contains(Double(dieTotal)) {
-						result = .Loss
+
 						currentBet[theBet] = nil
 						chipTotal += theChip.value
 						chipTotal += (theChip.value * theBet.odds)
@@ -213,7 +213,7 @@ extension GameScene {
 						removeBet(betName: theBet.name!)
 					}
 				case fieldBet:
-					result = .Win
+
 					currentBet[theBet] = nil
 					chipTotal += theChip.value
 					if dieTotal == 2 || dieTotal == 12 {
@@ -222,7 +222,7 @@ extension GameScene {
 						chipTotal += (theChip.value * theBet.odds)
 					}
 				case fours, fives, sixes, eights, nines, tens, hardSixBet, hardFourBet, hardTenBet, hardEightBet:
-					result = .Point
+
 					if die1.value == 2 && die2.value == 2 {
 						currentBet[theBet] = nil
 						placedBets.append([theBet:theChip])
@@ -251,15 +251,15 @@ extension GameScene {
 				}
 			}
 		}
-		return result!
+
 	}
 
-	func evaluatePointRoll() -> RollResult {
+	func evaluatePointRoll() {
 		let pointBet = getPointBet()
 		var theBet = Bet()
 		var theChip = Chip()
-		var result: RollResult?
-		result = .Push
+
+
 		switch dieTotal {
 		case thePoint:
 			print("Winner: Point Matched")
@@ -270,7 +270,7 @@ extension GameScene {
 			passLineBet.removeAllChildren()
 			comeOutRoll = true
 			thePoint = 0
-			result = .Win
+
 		case 2,3:
 			for placedBet in placedBets {
 				for (bet,chip) in placedBet {
@@ -322,7 +322,7 @@ extension GameScene {
 					}
 				}
 			}
-			result = .Push
+
 		case 4:
 			for placedBet in placedBets {
 				var currentBet = placedBet
@@ -556,7 +556,7 @@ extension GameScene {
 					}
 				}
 			}
-		result = .Win
+
 		case 7:
 			var currentBet = [Bet:Chip]()
 			print("Craps 7")
@@ -591,7 +591,7 @@ extension GameScene {
 			currentBet[passLineBet] = nil
 			gamePuck.texture = SKTexture(imageNamed: "OffPuck")
 			gamePuck.position = gamePuck.homePosition
-			result = .Loss
+
 		case 11:
 			for placedBet in placedBets {
 				var currentBet = placedBet
@@ -618,11 +618,11 @@ extension GameScene {
 					}
 				}
 			}
-			result = .Push
+
 		default:
 			break
 		}
-	return result!
+
 	}
 
 	func clearBetsButtonTouched() {

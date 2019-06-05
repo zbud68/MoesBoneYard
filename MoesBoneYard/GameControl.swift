@@ -13,19 +13,9 @@ extension GameScene {
 	}
 
 	func rollButtonTouched() {
-		rollResult = rollDice(dice: currentDice)
-
-		if rollResult == .Win {
-			comeOutRoll = true
-		} else if rollResult == .Loss {
-			comeOutRoll = true
-		} else if rollResult == .Point {
-			comeOutRoll = false
-		} else if rollResult == .Push {
-			comeOutRoll = false
-		}
+		rollDice(dice: currentDice)
 	}
-
+	
 	func getTexture(name: String) -> SKTexture {
 		let chipName = name
 		for chip in chips where chip.name == chipName {
