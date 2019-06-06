@@ -127,8 +127,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var eightsBets: [Chip] = []
 	var ninesBets: [Chip] = []
 	var tensBets: [Chip] = []
-
 	var selectedBet: Bet!
+	var pointBet: [Bet:Chip] = [:]
 	//PlacedBets is a Dictionary containing the BetName and the ChipValue placed
 	var placedBets: [[Bet:Chip]] = [[:]]
 	var comeOutRollBets: [[Bet:Chip]] = [[:]]
@@ -138,6 +138,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var crapsBets: [[Bet:Chip]] = [[:]]
 	var availableBets: [Bet] = [Bet]()
 	//var currentBets: [Bet] = [Bet]()
+	var currentPointBet: Bet = Bet()
 
 
 	//MARK: **********  Scoring Variables  **********
@@ -218,10 +219,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			for bet in availableBets {
 				let currentBet = bet
 				if nodeName == currentBet.name {
+					currentBet.chipsWagered.append(selectedChip)
 					currentBet.state = .On
 					let placedBet = [currentBet:selectedChip]
 					placedBets.append(placedBet)
 					placeBet(bet: placedBet)
+				}
+				for chip in currentBet.chipsWagered {
+					print(chip.value)
 				}
 			}
 

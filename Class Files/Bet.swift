@@ -18,5 +18,5 @@ class Bet: SKSpriteNode {
 	var placedBetPosition: CGPoint = CGPoint()
 	var puckPosition: CGPoint = CGPoint()
 	var state: BetState!
-	var chipsWagered: [SKSpriteNode] = [SKSpriteNode]()
+	var chipsWagered: [Chip] = [Chip]()
 }

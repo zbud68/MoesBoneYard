@@ -11,7 +11,6 @@ import UIKit
 
 extension GameScene {
 	func rollDice(dice: [Dice]) {
-
 		dieTotal = 0
 		dieValues.removeAll()
 		let currentDice = dice
@@ -47,7 +46,6 @@ extension GameScene {
 		let dieTotal = getDieTotal()
 		self.dieTotal = Int(dieTotal)
 		evaluateRoll()
-
 	}
 
 	func animateDice(isComplete: (Bool) -> Void) {
@@ -86,7 +84,7 @@ extension GameScene {
 		}
 
 	}
-
+/*
 	func processComeOutRollBets() {
 		for placedBet in placedBets {
 			var currentPlacedBet = placedBet
@@ -158,19 +156,17 @@ extension GameScene {
 			}
 		}
 	}
+*/
 
 	func evaluateComeOutRoll() {
-
-
 		for placedBet in placedBets {
 			var currentBet = placedBet
-			for (bet,chip) in placedBet {
+			for (bet,chip) in currentBet {
 				let theBet = bet
 				let theChip = chip
 				switch theBet {
 				case passLineBet, comeBet:
 					if craps.contains(Double(dieTotal)) {
-
 						currentBet[theBet] = nil
 						removeBet(betName: theBet.name!)
 						comeOutRoll = true
@@ -178,15 +174,19 @@ extension GameScene {
 						chipTotal += theChip.value
 						chipTotal += (theChip.value * theBet.odds)
 						removeBet(betName: theBet.name!)
+						currentBet[theBet] = nil
 						comeOutRoll = true
 					} else if points.contains(Double(dieTotal)) {
 						thePoint = dieTotal
+						currentPointBet = getPointBet()
+						currentBet[getPointBet()] = currentBet[passLineBet]
+						pointBet = [currentPointBet:currentBet[getPointBet()]] as! [Bet : Chip]
+						print("currentBetWager: \(currentBet[getPointBet()]!), passLineBetWager: \(currentBet[passLineBet]!)")
 						currentBet[passLineBet] = nil
 						placeGamePuck()
 					}
 				case dontPassBet, dontComeBet, anyCrapsBet:
 					if craps.contains(Double(dieTotal)) {
-
 						currentBet[theBet] = nil
 						chipTotal += theChip.value
 						chipTotal += (theChip.value * theBet.odds)
@@ -213,7 +213,6 @@ extension GameScene {
 						removeBet(betName: theBet.name!)
 					}
 				case fieldBet:
-
 					currentBet[theBet] = nil
 					chipTotal += theChip.value
 					if dieTotal == 2 || dieTotal == 12 {
@@ -222,7 +221,6 @@ extension GameScene {
 						chipTotal += (theChip.value * theBet.odds)
 					}
 				case fours, fives, sixes, eights, nines, tens, hardSixBet, hardFourBet, hardTenBet, hardEightBet:
-
 					if die1.value == 2 && die2.value == 2 {
 						currentBet[theBet] = nil
 						placedBets.append([theBet:theChip])
@@ -255,22 +253,29 @@ extension GameScene {
 	}
 
 	func evaluatePointRoll() {
-		let pointBet = getPointBet()
+		//let pointBet = getPointBet()
 		var theBet = Bet()
 		var theChip = Chip()
-
-
+		var pointBets = [Bet()]
+		var pointBetChips = [Chip()]
 		switch dieTotal {
 		case thePoint:
+			for (bet, chip) in pointBet {
+				pointBets.append(bet)
+				pointBetChips.append(chip)
+			}
 			print("Winner: Point Matched")
 			gamePuck.texture = SKTexture(imageNamed: "OffPuck")
 			gamePuck.position = gamePuck.homePosition
-			chipTotal += theChip.value
-			chipTotal += (theChip.value * theBet.odds)
+			for bet in pointBets {
+				for chip in pointBetChips {
+					chipTotal += Double(chip.value)
+					chipTotal += (Double(chip.value) * bet.odds)
+				}
+			}
 			passLineBet.removeAllChildren()
 			comeOutRoll = true
 			thePoint = 0
-
 		case 2,3:
 			for placedBet in placedBets {
 				for (bet,chip) in placedBet {
@@ -283,7 +288,7 @@ extension GameScene {
 					case "DontComeBet":
 						chipTotal += theChip.value
 						chipTotal += (theChip.value * theBet.odds)
-						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						moveChipToBetLocation(bet: theBet, chip: theChip)
 						theBet.state = .On
 						removeBet(betName: betName!)
 					case "AnyCrapsBet":
@@ -326,13 +331,13 @@ extension GameScene {
 		case 4:
 			for placedBet in placedBets {
 				var currentBet = placedBet
-				for (bet,chip) in placedBet {
+				for (bet,chip) in currentBet {
 					theBet = bet
 					theChip = chip
 					let betName = theBet.name
 					switch betName {
 					case "ComeBet":
-						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						moveChipToBetLocation(bet: theBet, chip: theChip)
 						placedBets.append([theBet:theChip])
 						currentBet[theBet] = nil
 					case "DontComeBet":
@@ -340,9 +345,9 @@ extension GameScene {
 						currentBet[theBet] = nil
 					case "Fours":
 						chipTotal += theChip.value
-						chipTotal += (theChip.value * pointBet.odds)
-						removeBet(betName: pointBet.name!)
-						currentBet[pointBet] = nil
+						chipTotal += (theChip.value * currentPointBet.odds)
+						removeBet(betName: currentPointBet.name!)
+						currentBet[currentPointBet] = nil
 					case "HardFourBet":
 						if die1.value == 2 && die2.value == 2 {
 							chipTotal += theChip.value
@@ -358,23 +363,23 @@ extension GameScene {
 		case 5:
 			for placedBet in placedBets {
 				var currentBet = placedBet
-				for (bet,chip) in placedBet {
+				for (bet,chip) in currentBet {
 					theBet = bet
 					theChip = chip
 					let betName = theBet.name
 					switch betName {
 					case "ComeBet":
-						let children = pointBet.children
+						let children = currentPointBet.children
 						if !children.isEmpty {
 							for child in children {
 								if child == fives {
 									chipTotal += theChip.value
-									chipTotal += (theChip.value * pointBet.odds)
-									removeBet(betName: pointBet.name!)
+									chipTotal += (theChip.value * currentPointBet.odds)
+									removeBet(betName: currentPointBet.name!)
 								}
 							}
 						}
-						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						moveChipToBetLocation(bet: theBet, chip: theChip)
 						placedBets.append([theBet:theChip])
 						removeBet(betName: betName!)
 						currentBet[theBet] = nil
@@ -394,23 +399,23 @@ extension GameScene {
 		case 6:
 			for placedBet in placedBets {
 				var currentBet = placedBet
-				for (bet,chip) in placedBet {
+				for (bet,chip) in currentBet {
 					theBet = bet
 					theChip = chip
 					let betName = theBet.name
 					switch betName {
 					case "ComeBet":
-						let children = pointBet.children
+						let children = currentPointBet.children
 						if !children.isEmpty {
 							for child in children {
 								if child == sixes {
 									chipTotal += theChip.value
-									chipTotal += (theChip.value * pointBet.odds)
-									removeBet(betName: pointBet.name!)
+									chipTotal += (theChip.value * currentPointBet.odds)
+									removeBet(betName: currentPointBet.name!)
 								}
 							}
 						}
-						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						moveChipToBetLocation(bet: theBet, chip: theChip)
 						placedBets.append([theBet:theChip])
 						removeBet(betName: betName!)
 						currentBet[theBet] = nil
@@ -437,23 +442,23 @@ extension GameScene {
 		case 8:
 			for placedBet in placedBets {
 				var currentBet = placedBet
-				for (bet,chip) in placedBet {
+				for (bet,chip) in currentBet {
 					theBet = bet
 					theChip = chip
 					let betName = theBet.name
 					switch betName {
 					case "ComeBet":
-						let children = pointBet.children
+						let children = currentPointBet.children
 						if !children.isEmpty {
 							for child in children {
 								if child == eights {
 									chipTotal += theChip.value
-									chipTotal += (theChip.value * pointBet.odds)
-									removeBet(betName: pointBet.name!)
+									chipTotal += (theChip.value * currentPointBet.odds)
+									removeBet(betName: currentPointBet.name!)
 								}
 							}
 						}
-						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						moveChipToBetLocation(bet: theBet, chip: theChip)
 						placedBets.append([theBet:theChip])
 						removeBet(betName: betName!)
 						currentBet[theBet] = nil
@@ -480,23 +485,23 @@ extension GameScene {
 		case 9:
 			for placedBet in placedBets {
 				var currentBet = placedBet
-				for (bet,chip) in placedBet {
+				for (bet,chip) in currentBet {
 					theBet = bet
 					theChip = chip
 					let betName = theBet.name
 					switch betName {
 					case "ComeBet":
-						let children = pointBet.children
+						let children = currentPointBet.children
 						if !children.isEmpty {
 							for child in children {
 								if child == nines {
 									chipTotal += theChip.value
-									chipTotal += (theChip.value * pointBet.odds)
-									removeBet(betName: pointBet.name!)
+									chipTotal += (theChip.value * currentPointBet.odds)
+									removeBet(betName: currentPointBet.name!)
 								}
 							}
 						}
-						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						moveChipToBetLocation(bet: theBet, chip: theChip)
 						placedBets.append([theBet:theChip])
 						removeBet(betName: betName!)
 						currentBet[theBet] = nil
@@ -516,23 +521,23 @@ extension GameScene {
 		case 10:
 			for placedBet in placedBets {
 				var currentBet = placedBet
-				for (bet,chip) in placedBet {
+				for (bet,chip) in currentBet {
 					theBet = bet
 					theChip = chip
 					let betName = theBet.name
 					switch betName {
 					case "ComeBet":
-						let children = pointBet.children
+						let children = currentPointBet.children
 						if !children.isEmpty {
 							for child in children {
 								if child == tens {
 									chipTotal += theChip.value
-									chipTotal += (theChip.value * pointBet.odds)
-									removeBet(betName: pointBet.name!)
+									chipTotal += (theChip.value * currentPointBet.odds)
+									removeBet(betName: currentPointBet.name!)
 								}
 							}
 						}
-						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						moveChipToBetLocation(bet: theBet, chip: theChip)
 						placedBets.append([theBet:theChip])
 						removeBet(betName: betName!)
 						currentBet[theBet] = nil
@@ -563,7 +568,7 @@ extension GameScene {
 			comeOutRoll = true
 			for placedBet in placedBets {
 				currentBet = placedBet
-				for (bet,chip) in placedBet {
+				for (bet,chip) in currentBet {
 					theBet = bet
 					theChip = chip
 					let betName = theBet.name
@@ -574,7 +579,7 @@ extension GameScene {
 						removeBet(betName: betName!)
 						currentBet[theBet] = nil
 					case "DontComeBet":
-						moveChipToBetLocation(bet: pointBet, chip: theChip)
+						moveChipToBetLocation(bet: theBet, chip: theChip)
 						removeBet(betName: betName!)
 						currentBet[theBet] = nil
 					case "SevenBet":
@@ -595,7 +600,7 @@ extension GameScene {
 		case 11:
 			for placedBet in placedBets {
 				var currentBet = placedBet
-				for (bet,chip) in placedBet {
+				for (bet,chip) in currentBet {
 					theBet = bet
 					theChip = chip
 					let betName = theBet.name

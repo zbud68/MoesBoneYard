@@ -28,7 +28,6 @@ extension GameScene {
 
 	func getPointBet() -> Bet {
 		var theBet = Bet()
-
 		switch dieTotal {
 		case 4:
 			theBet = fours
@@ -44,6 +43,9 @@ extension GameScene {
 			theBet = tens
 		default:
 			break
+		}
+		if !theBet.chipsWagered.isEmpty {
+			let chipValue = theBet.chipsWagered.first!.value
 		}
 		return theBet
 	}

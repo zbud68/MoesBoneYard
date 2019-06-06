@@ -308,6 +308,7 @@ extension GameScene {
 			chip_5 = Chip_5
 			chip_5.value = 5
 			chip_5.name = "Chip_5"
+
 			chips.append(chip_5)
 		} else {
 			print("$5 Chips not found")
@@ -413,12 +414,14 @@ extension GameScene {
 	func setupDice() {
 		if let Die1 = gameTable?.childNode(withName: "Die1") as? Dice {
 			die1 = Die1
+			die1.currentTexture = die1.texture!
 		} else {
 			print("Die 1 not found")
 		}
 
 		if let Die2 = gameTable?.childNode(withName: "Die2") as? Dice {
 			die2 = Die2
+			die2.currentTexture = die2.texture!
 		} else {
 			print("Die 2 not found")
 		}
