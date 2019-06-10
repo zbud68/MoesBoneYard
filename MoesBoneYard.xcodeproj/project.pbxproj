@@ -24,6 +24,7 @@
 		4D888A91228FDDC800E9F3D0 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D888A90228FDDC800E9F3D0 /* GameScene.swift */; };
 		4D888A98228FDDCC00E9F3D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D888A97228FDDCC00E9F3D0 /* Assets.xcassets */; };
 		4D888B70228FE27D00E9F3D0 /* Dice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D888B6E228FE27D00E9F3D0 /* Dice.swift */; };
+		4D98F7E022ADBEF4003BF9CA /* EasterEgg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D98F7DF22ADBEF4003BF9CA /* EasterEgg.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		4D888A97228FDDCC00E9F3D0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4D888A9C228FDDCC00E9F3D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4D888B6E228FE27D00E9F3D0 /* Dice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dice.swift; sourceTree = "<group>"; };
+		4D98F7DF22ADBEF4003BF9CA /* EasterEgg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EasterEgg.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 				4D596DBF2294C66B008940DB /* Bet.swift */,
 				4D2127312298EEDE0069DA5D /* Player.swift */,
 				4D212733229952A70069DA5D /* Puck.swift */,
+				4D98F7DF22ADBEF4003BF9CA /* EasterEgg.swift */,
 			);
 			path = "Class Files";
 			sourceTree = SOURCE_ROOT;
@@ -220,6 +223,7 @@
 				4D6E9791229F901A0033C82C /* GameControl.swift in Sources */,
 				4D6E97A3229F913C0033C82C /* GameViewController.swift in Sources */,
 				4D888B70228FE27D00E9F3D0 /* Dice.swift in Sources */,
+				4D98F7E022ADBEF4003BF9CA /* EasterEgg.swift in Sources */,
 				4D8140DB22912E6F00E500D8 /* Scoring_Ext.swift in Sources */,
 				4D596DC02294C66B008940DB /* Bet.swift in Sources */,
 				4D6E978F229F8FE30033C82C /* GameSetup_Ext.swift in Sources */,

@@ -11,11 +11,13 @@ import UIKit
 
 struct Player {
 	var name: String!
-	var chipTotal: Double!
+	var chipTotal: Int!
+	var totalAmountBet: Int!
 
-	init(name: String, chipTotal: Double) {
+	init(name: String, chipTotal: Int, totalAmountBet: Int) {
 		self.name = name
 		self.chipTotal = chipTotal
+		self.totalAmountBet = totalAmountBet
 	}
 }
 

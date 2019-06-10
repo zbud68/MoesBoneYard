@@ -18,7 +18,7 @@ enum PuckState {
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
-	var betState = BetState.Off {
+/*	var betState = BetState.Off {
 		willSet {
 			switch newValue {
 			case .On:
@@ -27,7 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 				print("betState: \(betState)")
 			}
 		}
-	}
+	}*/
 
 	let handlerBlock: (Bool) -> Void = {
 		if $0 {
@@ -37,9 +37,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	}
 
 	var chipTotalLabel: SKLabelNode!
-	var chipTotal: Double = 0 {
+	var chipTotal: Int = 0 {
 		didSet {
 			chipTotalLabel.text = String(Int(chipTotal))
+		}
+	}
+
+	var chipsBetTotalLabel: SKLabelNode = SKLabelNode(fontNamed: "Optima")
+	var chipsBetTotal: Int = 0  {
+		didSet {
+			chipsBetTotalLabel.text = String(chipsBetTotal)
+		}
+	}
+
+	var totalAmountWonOrLostLabel: SKLabelNode!
+	var totalAmountWonOrLost: Int = 0 {
+		didSet {
+			totalAmountWonOrLostLabel.text = String(Int(totalAmountWonOrLost))
 		}
 	}
 
@@ -63,19 +77,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			switch newValue {
 			case .On:
 				gamePuck.texture = gamePuck.onTexture
+				placeGamePuck()
 			case .Off:
 				gamePuck.texture = gamePuck.offTexture
+				gamePuck.position = gamePuck.homePosition
 			}
 		}
 	}
 
-	var totalAmountBet: Int = Int()
-	var chipValue: Int = Int()
-	var numChipsBet: Int = Int()
+	//var totalAmountBet: Int = Int()
+	//var chipValue: Int = Int()
+	//var numChipsBet: Int = Int()
 
-	var dieValues: [Double] = [Double]()
+	var dieValues: [Int] = [Int]()
 
-	var player: Player = Player(name: "Player 1", chipTotal: 10000)
+	var player: Player = Player(name: "Player 1", chipTotal: 10000, totalAmountBet: 0)
 
 	var touchedNode: SKNode?
 	var touchLocation: CGPoint?
@@ -88,9 +104,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	//MARK: *********  Possible Bets **********
 	var bet: Bet? = Bet()
 
-	let craps: [Double] = [2,3,12]
-	let points: [Double] = [4,5,6,8,9,10]
-	let wins: [Double] = [7,11]
+	let craps: [Int] = [2,3]
+	let points: [Int] = [4,5,6,8,9,10]
+	let wins: [Int] = [7,11]
+	let fields: [Int] = [2,3,4,9,10,11,12]
 	
 	var validBetsPlaced: Bool = false
 	var fours: Bet = Bet()
@@ -121,29 +138,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var boxCarsBet: Bet = Bet()
 	var anyCrapsBet: Bet = Bet()
 	var craps3Bet: Bet = Bet()
-	var foursBets: [Chip] = []
-	var fivesBets: [Chip] = []
-	var sixesBets: [Chip] = []
-	var eightsBets: [Chip] = []
-	var ninesBets: [Chip] = []
-	var tensBets: [Chip] = []
 	var selectedBet: Bet!
-	var pointBet: [Bet:Chip] = [:]
+	//var pointBet: [Bet:Chip] = [:]
 	//PlacedBets is a Dictionary containing the BetName and the ChipValue placed
 	var placedBets: [[Bet:Chip]] = [[:]]
-	var comeOutRollBets: [[Bet:Chip]] = [[:]]
-	var singleRollBets: [[Bet:Chip]] = [[:]]
+	//var comeOutRollBets: [Bet] = []
+	var singleRollBets: [Bet] = []
+	var crapsRollBets: [Bet] = []
 	var pointsBets: [[Bet:Chip]] = [[:]]
-	var pointRollBets: [[Bet:Chip]] = [[:]]
-	var crapsBets: [[Bet:Chip]] = [[:]]
+	var pointRollBets: [Bet] = []
 	var availableBets: [Bet] = [Bet]()
+	var hardWayBets: [Bet] = []
 	//var currentBets: [Bet] = [Bet]()
-	var currentPointBet: Bet = Bet()
+	//var currentPointBet: Bet = Bet()
 
 
 	//MARK: **********  Scoring Variables  **********
-	var selectedChipValue: Double = Double(5)
-	var totalBetThisRoll: Double = Double(0)
+	var selectedChipValue: Int = Int(5)
+	var totalBetThisRoll: Int = Int(0)
+	var previousChipTotal: Int = Int(10000)
+	var currentChipTotal: Int = Int(10000)
+	var totalChipsWonOrLost: Int = Int(0)
 
 
 	//MARK: **********  Chip Variables  **********
@@ -166,6 +181,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var chip_500_PlaceHolder: SKSpriteNode = SKSpriteNode()
 	var chip_1000_PlaceHolder: SKSpriteNode = SKSpriteNode()
 
+	var chipStack_1: EasterEgg!
+	var chipStack_5: EasterEgg!
+	var chipStack_10: EasterEgg!
+	var chipStack_25: EasterEgg!
+	var chipStack_1000: EasterEgg!
+	var easterEggs: [EasterEgg]!
+	var easterEggFound: Bool = false
+
 	var selectedChipTexture: SKTexture = SKTexture()
 	var selectedChip: Chip = Chip()
 
@@ -186,13 +209,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var die2: Dice = Dice()
 
 	var dieTotal = Int()
-	var thePoint = Int()
+	var thePoint: Int = Int()
 	var thePointBet = Bet()
+	//var theCurrentPointBet: [Bet:Int] = [Bet():0]
 	
 	override func didMove(to view: SKView) {
-		setupTotalChipCountLabel()
         setupGameTable()
-		gameStart()
+		chipsBetTotal = 0
+		chipsBetTotalLabel.text = String(chipsBetTotal)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -207,6 +231,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	}
 
 	func handleTouches(TouchedNode: SKNode) {
+		var currentBet = Bet()
 		var nodeName = ""
 		let touchedNode = TouchedNode
 		if let name = touchedNode.name {
@@ -217,16 +242,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 				selectedChipTexture = chip.texture!
 			}
 			for bet in availableBets {
-				let currentBet = bet
+				currentBet = bet
 				if nodeName == currentBet.name {
-					currentBet.chipsWagered.append(selectedChip)
-					currentBet.state = .On
+					//currentBet.chipsWagered.append(selectedChip)
 					let placedBet = [currentBet:selectedChip]
-					placedBets.append(placedBet)
+					//placedBets.append(placedBet)
 					placeBet(bet: placedBet)
+					//chipsBetTotal += selectedChip.value
 				}
-				for chip in currentBet.chipsWagered {
-					print(chip.value)
+			}
+			for chip in currentBet.chipsWagered {
+				print("chip placed: \(chip.value)")
+			}
+
+			for egg in easterEggs {
+				if nodeName == egg.name {
+					let currentEgg = egg
+					let stackValue = egg.stackValue
+					if currentEgg.name == nodeName && stackValue == selectedChip.value {
+						currentEgg.status = .On
+					} else {
+						currentEgg.status = .Off
+					}
 				}
 			}
 
@@ -243,8 +280,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		}
 	}
 
-   override func update(_ currentTime: TimeInterval) {
+	func wasEasterEggFound() {
+		easterEggFound = false
+		var foundEggs: [EasterEgg] = []
+		for egg in easterEggs {
+			let currentEgg = egg
+			if currentEgg.status == .On {
+				foundEggs.append(currentEgg)
+			}
+		}
+		if foundEggs.count == 5 {
+			easterEggFound = true
+		}
+	}
+
+	func removeEasterEggs() {
+		print("CONGRATS!!! You found uncovered a secret stash of chips\nHeres 1 Million Chips, Enjoy!")
+		for egg in easterEggs {
+			egg.status = .Off
+		}
+		easterEggs.removeAll()
+		easterEggFound = false
+		chipTotal += 1000000
+	}
+
+	override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+		wasEasterEggFound()
+		if easterEggFound {
+			removeEasterEggs()
+		}
 		chipTotalLabel.text = String(Int(chipTotal))
+		chipsBetTotalLabel.text = String(Int(chipsBetTotal))
 	}
 }

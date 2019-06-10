@@ -10,5 +10,6 @@ import SpriteKit
 import UIKit
 
 class Chip: SKSpriteNode {
-	var value: Double = Double()
+	var value: Int = Int()
+	var counted: Bool = false
 }

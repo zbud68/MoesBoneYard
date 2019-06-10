@@ -9,9 +9,6 @@
 import SpriteKit
 
 extension GameScene {
-	func gameStart() {
-	}
-
 	func rollButtonTouched() {
 		rollDice(dice: currentDice)
 	}
@@ -31,21 +28,24 @@ extension GameScene {
 		switch dieTotal {
 		case 4:
 			theBet = fours
+			//theCurrentPointBet = [fours:4]
 		case 5:
 			theBet = fives
+			//theCurrentPointBet = [fives:5]
 		case 6:
 			theBet = sixes
+			//theCurrentPointBet = [sixes:6]
 		case 8:
 			theBet = eights
+			//theCurrentPointBet = [eights:8]
 		case 9:
 			theBet = nines
+			//theCurrentPointBet = [nines:9]
 		case 10:
 			theBet = tens
+			//theCurrentPointBet = [tens:10]
 		default:
 			break
-		}
-		if !theBet.chipsWagered.isEmpty {
-			let chipValue = theBet.chipsWagered.first!.value
 		}
 		return theBet
 	}
