@@ -10,7 +10,7 @@
 		4D2127322298EEDE0069DA5D /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D2127312298EEDE0069DA5D /* Player.swift */; };
 		4D212734229952A70069DA5D /* Puck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D212733229952A70069DA5D /* Puck.swift */; };
 		4D55FAA522936E56008FCB91 /* Chip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D55FAA422936E56008FCB91 /* Chip.swift */; };
-		4D596DC02294C66B008940DB /* Bet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D596DBF2294C66B008940DB /* Bet.swift */; };
+		4D596DC02294C66B008940DB /* TableBet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D596DBF2294C66B008940DB /* TableBet.swift */; };
 		4D6E9768229F8EED0033C82C /* GameConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E9767229F8EED0033C82C /* GameConstants.swift */; };
 		4D6E978F229F8FE30033C82C /* GameSetup_Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E978E229F8FE30033C82C /* GameSetup_Ext.swift */; };
 		4D6E9791229F901A0033C82C /* GameControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E9790229F901A0033C82C /* GameControl.swift */; };
@@ -31,7 +31,7 @@
 		4D2127312298EEDE0069DA5D /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		4D212733229952A70069DA5D /* Puck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puck.swift; sourceTree = "<group>"; };
 		4D55FAA422936E56008FCB91 /* Chip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chip.swift; sourceTree = "<group>"; };
-		4D596DBF2294C66B008940DB /* Bet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bet.swift; sourceTree = "<group>"; };
+		4D596DBF2294C66B008940DB /* TableBet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableBet.swift; sourceTree = "<group>"; };
 		4D6E9767229F8EED0033C82C /* GameConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameConstants.swift; sourceTree = "<group>"; };
 		4D6E978E229F8FE30033C82C /* GameSetup_Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSetup_Ext.swift; sourceTree = "<group>"; };
 		4D6E9790229F901A0033C82C /* GameControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameControl.swift; sourceTree = "<group>"; };
@@ -118,7 +118,7 @@
 			children = (
 				4D888B6E228FE27D00E9F3D0 /* Dice.swift */,
 				4D55FAA422936E56008FCB91 /* Chip.swift */,
-				4D596DBF2294C66B008940DB /* Bet.swift */,
+				4D596DBF2294C66B008940DB /* TableBet.swift */,
 				4D2127312298EEDE0069DA5D /* Player.swift */,
 				4D212733229952A70069DA5D /* Puck.swift */,
 				4D98F7DF22ADBEF4003BF9CA /* EasterEgg.swift */,
@@ -225,7 +225,7 @@
 				4D888B70228FE27D00E9F3D0 /* Dice.swift in Sources */,
 				4D98F7E022ADBEF4003BF9CA /* EasterEgg.swift in Sources */,
 				4D8140DB22912E6F00E500D8 /* Scoring_Ext.swift in Sources */,
-				4D596DC02294C66B008940DB /* Bet.swift in Sources */,
+				4D596DC02294C66B008940DB /* TableBet.swift in Sources */,
 				4D6E978F229F8FE30033C82C /* GameSetup_Ext.swift in Sources */,
 				4D6E9768229F8EED0033C82C /* GameConstants.swift in Sources */,
 				4D55FAA522936E56008FCB91 /* Chip.swift in Sources */,

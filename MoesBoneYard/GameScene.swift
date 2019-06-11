@@ -17,18 +17,11 @@ enum PuckState {
 	case On, Off
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
-/*	var betState = BetState.Off {
-		willSet {
-			switch newValue {
-			case .On:
-				print("betState: \(betState)")
-			case .Off:
-				print("betState: \(betState)")
-			}
-		}
-	}*/
+enum ComeOutBetType {
+	case Pass, DontPass
+}
 
+class GameScene: SKScene, SKPhysicsContactDelegate {
 	let handlerBlock: (Bool) -> Void = {
 		if $0 {
 			var finished = false
@@ -36,24 +29,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		}
 	}
 
+	var currentPointLabel: SKLabelNode = SKLabelNode(fontNamed: "Optima")
+	var currentPoint: Int = 0 {
+		didSet {
+			currentPointLabel.text = String("Current Point: \(currentPoint)")
+		}
+	}
+
 	var chipTotalLabel: SKLabelNode!
 	var chipTotal: Int = 0 {
 		didSet {
+			previousChipTotal = currentChipTotal
+			currentChipTotal = chipTotal
+			totalChipsWonOrLost = (previousChipTotal - currentChipTotal)
 			chipTotalLabel.text = String(Int(chipTotal))
+			print("Chip Total: \(chipTotal)")
 		}
 	}
-
+/*
 	var chipsBetTotalLabel: SKLabelNode = SKLabelNode(fontNamed: "Optima")
 	var chipsBetTotal: Int = 0  {
 		didSet {
-			chipsBetTotalLabel.text = String(chipsBetTotal)
+			chipsBetTotalLabel.text = String("Chips Bet: \(chipsBetTotal)")
 		}
 	}
-
-	var totalAmountWonOrLostLabel: SKLabelNode!
-	var totalAmountWonOrLost: Int = 0 {
+*/
+	var totalAmountWonOrLostLabel: SKLabelNode = SKLabelNode(fontNamed: "Optima")
+	var currentRollResults: Int = 0 {
 		didSet {
-			totalAmountWonOrLostLabel.text = String(Int(totalAmountWonOrLost))
+			totalAmountWonOrLostLabel.text = "Amount Won or Lost: \(totalChipsWonOrLost))"
 		}
 	}
 
@@ -85,9 +89,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		}
 	}
 
-	//var totalAmountBet: Int = Int()
-	//var chipValue: Int = Int()
-	//var numChipsBet: Int = Int()
+	var passBet: Bool = true
+	var comeOutBetType = ComeOutBetType.Pass {
+		willSet {
+			switch newValue {
+			case .Pass:
+				passBet = true
+			case .DontPass:
+				passBet = false
+			}
+		}
+	}
 
 	var dieValues: [Int] = [Int]()
 
@@ -102,7 +114,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	
 	
 	//MARK: *********  Possible Bets **********
-	var bet: Bet? = Bet()
+	var bet: TableBet? = TableBet()
 
 	let craps: [Int] = [2,3]
 	let points: [Int] = [4,5,6,8,9,10]
@@ -110,46 +122,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	let fields: [Int] = [2,3,4,9,10,11,12]
 	
 	var validBetsPlaced: Bool = false
-	var fours: Bet = Bet()
-	var fives: Bet = Bet()
-	var sixes: Bet = Bet()
-	var eights: Bet = Bet()
-	var nines: Bet = Bet()
-	var tens: Bet = Bet()
-	var foursBuyBet: Bet = Bet()
-	var fivesBuyBet: Bet = Bet()
-	var sixesBuyBet: Bet = Bet()
-	var eightsBuyBet: Bet = Bet()
-	var ninesBuyBet: Bet = Bet()
-	var tensBuyBet: Bet = Bet()
-	var comeBet: Bet = Bet()
-	var dontComeBet: Bet = Bet()
-	var passLineBet: Bet = Bet()
-	var dontPassBet: Bet = Bet()
-	var dontPassBet2: Bet = Bet()
-	var fieldBet: Bet = Bet()
-	var sevenBet: Bet = Bet()
-	var elevenBet: Bet = Bet()
-	var hardFourBet: Bet = Bet()
-	var hardSixBet: Bet = Bet()
-	var hardEightBet: Bet = Bet()
-	var hardTenBet: Bet = Bet()
-	var snakeEyesBet: Bet = Bet()
-	var boxCarsBet: Bet = Bet()
-	var anyCrapsBet: Bet = Bet()
-	var craps3Bet: Bet = Bet()
-	var selectedBet: Bet!
-	//var pointBet: [Bet:Chip] = [:]
+	var fours: TableBet = TableBet()
+	var fives: TableBet = TableBet()
+	var sixes: TableBet = TableBet()
+	var eights: TableBet = TableBet()
+	var nines: TableBet = TableBet()
+	var tens: TableBet = TableBet()
+	var foursBuyBet: TableBet = TableBet()
+	var fivesBuyBet: TableBet = TableBet()
+	var sixesBuyBet: TableBet = TableBet()
+	var eightsBuyBet: TableBet = TableBet()
+	var ninesBuyBet: TableBet = TableBet()
+	var tensBuyBet: TableBet = TableBet()
+	var comeBet: TableBet = TableBet()
+	var dontComeBet: TableBet = TableBet()
+	var passLineBet: TableBet = TableBet()
+	var dontPassBet: TableBet = TableBet()
+	var dontPassBet2: TableBet = TableBet()
+	var fieldBet: TableBet = TableBet()
+	var sevenBet: TableBet = TableBet()
+	var elevenBet: TableBet = TableBet()
+	var hardFourBet: TableBet = TableBet()
+	var hardSixBet: TableBet = TableBet()
+	var hardEightBet: TableBet = TableBet()
+	var hardTenBet: TableBet = TableBet()
+	var snakeEyesBet: TableBet = TableBet()
+	var boxCarsBet: TableBet = TableBet()
+	var anyCrapsBet: TableBet = TableBet()
+	var craps3Bet: TableBet = TableBet()
+	var selectedBet: TableBet!
 	//PlacedBets is a Dictionary containing the BetName and the ChipValue placed
-	var placedBets: [[Bet:Chip]] = [[:]]
-	//var comeOutRollBets: [Bet] = []
-	var singleRollBets: [Bet] = []
-	var crapsRollBets: [Bet] = []
-	var pointsBets: [[Bet:Chip]] = [[:]]
-	var pointRollBets: [Bet] = []
-	var availableBets: [Bet] = [Bet]()
-	var hardWayBets: [Bet] = []
-	//var currentBets: [Bet] = [Bet]()
+	var placedBets: [TableBet] = []
+	var singleRollBets: [TableBet] = []
+	var crapsRollBets: [TableBet] = []
+	var pointsBets: [TableBet] = []
+	var pointRollBets: [TableBet] = []
+	var availableBets: [TableBet] = []
+	var hardWayBets: [TableBet] = []
+	var currentBets: [TableBet] = []
 	//var currentPointBet: Bet = Bet()
 
 
@@ -210,13 +220,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 	var dieTotal = Int()
 	var thePoint: Int = Int()
-	var thePointBet = Bet()
-	//var theCurrentPointBet: [Bet:Int] = [Bet():0]
-	
+	var thePointBet = TableBet()
+
 	override func didMove(to view: SKView) {
         setupGameTable()
-		chipsBetTotal = 0
-		chipsBetTotalLabel.text = String(chipsBetTotal)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -231,7 +238,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	}
 
 	func handleTouches(TouchedNode: SKNode) {
-		var currentBet = Bet()
+		var currentBet = TableBet()
 		var nodeName = ""
 		let touchedNode = TouchedNode
 		if let name = touchedNode.name {
@@ -244,16 +251,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			for bet in availableBets {
 				currentBet = bet
 				if nodeName == currentBet.name {
-					//currentBet.chipsWagered.append(selectedChip)
-					let placedBet = [currentBet:selectedChip]
-					//placedBets.append(placedBet)
-					placeBet(bet: placedBet)
-					//chipsBetTotal += selectedChip.value
+					placeBet(bet: currentBet)
 				}
 			}
-			for chip in currentBet.chipsWagered {
-				print("chip placed: \(chip.value)")
-			}
+
+			//for chip in currentBet.chipsWagered {
+				//print("chip placed: \(chip.value)")
+			//}
 
 			for egg in easterEggs {
 				if nodeName == egg.name {
@@ -310,7 +314,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		if easterEggFound {
 			removeEasterEggs()
 		}
-		chipTotalLabel.text = String(Int(chipTotal))
-		chipsBetTotalLabel.text = String(Int(chipsBetTotal))
+		currentPointLabel.text = "Current Point: \(currentPoint)"
+		chipTotalLabel.text = "\(chipTotal)"
+		totalAmountWonOrLostLabel.text = "Amount Won/Lost: \(totalChipsWonOrLost)"
+		//chipsBetTotalLabel.text = "Current Point: \(thePoint)"
 	}
 }

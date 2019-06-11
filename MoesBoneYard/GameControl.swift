@@ -23,31 +23,51 @@ extension GameScene {
 		return selectedChipTexture
 	}
 
-	func getPointBet() -> Bet {
-		var theBet = Bet()
+	func getPointBet() -> TableBet {
+		var theBet = TableBet()
 		switch dieTotal {
 		case 4:
 			theBet = fours
-			//theCurrentPointBet = [fours:4]
 		case 5:
 			theBet = fives
-			//theCurrentPointBet = [fives:5]
 		case 6:
 			theBet = sixes
-			//theCurrentPointBet = [sixes:6]
 		case 8:
 			theBet = eights
-			//theCurrentPointBet = [eights:8]
 		case 9:
 			theBet = nines
-			//theCurrentPointBet = [nines:9]
 		case 10:
 			theBet = tens
-			//theCurrentPointBet = [tens:10]
 		default:
 			break
 		}
 		return theBet
+	}
+
+	func setupComeOutRoll() {
+		if passLineBet.chipsWagered.count > 0 {
+			passLineBet.betState = .On
+			comeOutBetType = .Pass
+		} else if dontPassBet.chipsWagered.count > 0 {
+			dontPassBet.betState = .On
+			comeOutBetType = .DontPass
+			passLineBet.betState = .Off
+		} else {
+			noValidBetsPlaced()
+		}
+	}
+
+	func noValidBetsPlaced() {
+		print("No Valid Bets Placed for Come Out Roll. Valid Bets for Come Out Roll are 'PassLineBet or DontPassBet")
+	}
+
+	func resetComeOutRoll() {
+		comeOutRoll = true
+		passLineBet.chipsWagered.removeAll()
+		dontPassBet.chipsWagered.removeAll()
+		for pointBet in pointsBets {
+			pointBet.betState = .Off
+		}
 	}
 }
 

@@ -1,5 +1,5 @@
 //
-//  Bet.swift
+//  TableBet.swift
 //  Moe's Bone Yard
 //
 //  Created by Mark Davis on 5/21/19.
@@ -13,10 +13,21 @@ enum BetState {
 	case On, Off
 }
 
-class Bet: SKSpriteNode {
+class TableBet: SKSpriteNode {
+	var betState = BetState.Off {
+		willSet {
+			switch newValue {
+			case .On:
+				validBet = true
+			case .Off:
+				validBet = false
+			}
+		}
+	}
+
 	var odds: Double = Double()
 	var placedBetPosition: CGPoint = CGPoint()
 	var puckPosition: CGPoint = CGPoint()
-	var state: BetState!
+	var validBet: Bool = true
 	var chipsWagered: [Chip] = [Chip]()
 }

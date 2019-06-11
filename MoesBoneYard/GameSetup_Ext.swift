@@ -26,9 +26,10 @@ extension GameScene {
 		setupDice()
 		setupPuck()
 		setupTotalChipCountLabel()
-		setupTotalChipsBetLabel()
-		setupTotalAmountWonOrLostLabel()
+		//setupTotalChipsBetLabel()
+		//setupTotalAmountWonOrLostLabel()
 		setupChipStacks()
+		setupCurrentPointLabel()
 	}
 
 	func setupChipStacks() {
@@ -67,9 +68,9 @@ extension GameScene {
 	}
 
 	func setupBets() {
- 		if let Fours = gameTable?.childNode(withName: "Fours") as? Bet {
+ 		if let Fours = gameTable?.childNode(withName: "Fours") as? TableBet {
             fours = Fours
-			fours.state = .Off
+			fours.betState = .Off
 			fours.odds = 2
 			fours.placedBetPosition = CGPoint(x: 0, y: 0)
 			fours.puckPosition = CGPoint(x: -110, y: 125)
@@ -78,9 +79,9 @@ extension GameScene {
             print("Fours not found")
         }
 
-		if let Fives = gameTable?.childNode(withName: "Fives") as? Bet {
+		if let Fives = gameTable?.childNode(withName: "Fives") as? TableBet {
             fives = Fives
-			fives.state = .Off
+			fives.betState = .Off
 			fives.odds = 1.5
 			fives.placedBetPosition = CGPoint(x: 0, y: 0)
 			fives.puckPosition = CGPoint(x: -45, y: 125)
@@ -89,9 +90,9 @@ extension GameScene {
             print("Fives not found")
         }
 
-		if let Sixes = gameTable?.childNode(withName: "Sixes") as? Bet {
+		if let Sixes = gameTable?.childNode(withName: "Sixes") as? TableBet {
             sixes = Sixes
-			sixes.state = .Off
+			sixes.betState = .Off
 			sixes.odds = 1.2
 			sixes.placedBetPosition = CGPoint(x: 0, y: 0)
 			sixes.puckPosition = CGPoint(x: 20, y: 125)
@@ -100,9 +101,9 @@ extension GameScene {
             print("Sixes not found")
         }
 
-		if let Eights = gameTable?.childNode(withName: "Eights") as? Bet {
+		if let Eights = gameTable?.childNode(withName: "Eights") as? TableBet {
             eights = Eights
-			eights.state = .Off
+			eights.betState = .Off
 			eights.odds = 1.2
 			eights.placedBetPosition = CGPoint(x: 0, y: 0)
 			eights.puckPosition = CGPoint(x: 85, y: 125)
@@ -111,9 +112,9 @@ extension GameScene {
             print("Eights not found")
         }
 
-		if let Nines = gameTable?.childNode(withName: "Nines") as? Bet {
+		if let Nines = gameTable?.childNode(withName: "Nines") as? TableBet {
             nines = Nines
-			nines.state = .Off
+			nines.betState = .Off
 			nines.odds = 1.5
 			nines.placedBetPosition = CGPoint(x: 0, y: 0)
 			nines.puckPosition = CGPoint(x: 150, y: 125)
@@ -122,9 +123,9 @@ extension GameScene {
             print("Nines not found")
         }
 
-		if let Tens = gameTable?.childNode(withName: "Tens") as? Bet {
+		if let Tens = gameTable?.childNode(withName: "Tens") as? TableBet {
             tens = Tens
-			tens.state = .Off
+			tens.betState = .Off
 			tens.odds = 2
 			tens.placedBetPosition = CGPoint(x: 0, y: 0)
 			tens.puckPosition = CGPoint(x: 215, y: 125)
@@ -133,9 +134,9 @@ extension GameScene {
             print("Tens not found")
         }
 
-        if let FoursBuyBet = gameTable?.childNode(withName: "FoursBuyBet") as? Bet {
+        if let FoursBuyBet = gameTable?.childNode(withName: "FoursBuyBet") as? TableBet {
             foursBuyBet = FoursBuyBet
-			foursBuyBet.state = .Off
+			foursBuyBet.betState = .Off
 			foursBuyBet.odds = 2
 			foursBuyBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(foursBuyBet)
@@ -143,9 +144,9 @@ extension GameScene {
             print("FoursBuyBet not found")
         }
 
-		if let FivesBuyBet = gameTable?.childNode(withName: "FivesBuyBet") as? Bet {
+		if let FivesBuyBet = gameTable?.childNode(withName: "FivesBuyBet") as? TableBet {
 			fivesBuyBet = FivesBuyBet
-			fivesBuyBet.state = .Off
+			fivesBuyBet.betState = .Off
 			fivesBuyBet.odds = 1.5
 			fivesBuyBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(fivesBuyBet)
@@ -153,9 +154,9 @@ extension GameScene {
 			print("FivesBuyBet not found")
 		}
 
-		if let SixesBuyBet = gameTable?.childNode(withName: "SixesBuyBet") as? Bet {
+		if let SixesBuyBet = gameTable?.childNode(withName: "SixesBuyBet") as? TableBet {
 			sixesBuyBet = SixesBuyBet
-			sixesBuyBet.state = .Off
+			sixesBuyBet.betState = .Off
 			sixesBuyBet.odds = 1.2
 			sixesBuyBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(sixesBuyBet)
@@ -163,9 +164,9 @@ extension GameScene {
 			print("SixesBuyBet not found")
 		}
 
-		if let EightsBuyBet = gameTable?.childNode(withName: "EightsBuyBet") as? Bet {
+		if let EightsBuyBet = gameTable?.childNode(withName: "EightsBuyBet") as? TableBet {
 			eightsBuyBet = EightsBuyBet
-			eightsBuyBet.state = .Off
+			eightsBuyBet.betState = .Off
 			eightsBuyBet.odds = 1.2
 			eightsBuyBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(eightsBuyBet)
@@ -173,9 +174,9 @@ extension GameScene {
 			print("EightsBuyBet not found")
 		}
 
-		if let NinesBuyBet = gameTable?.childNode(withName: "NinesBuyBet") as? Bet {
+		if let NinesBuyBet = gameTable?.childNode(withName: "NinesBuyBet") as? TableBet {
 			ninesBuyBet = NinesBuyBet
-			ninesBuyBet.state = .Off
+			ninesBuyBet.betState = .Off
 			ninesBuyBet.odds = 1.5
 			ninesBuyBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(ninesBuyBet)
@@ -183,9 +184,9 @@ extension GameScene {
 			print("NinesBuyBet not found")
 		}
 
-		if let TensBuyBet = gameTable?.childNode(withName: "TensBuyBet") as? Bet {
+		if let TensBuyBet = gameTable?.childNode(withName: "TensBuyBet") as? TableBet {
 			tensBuyBet = TensBuyBet
-			tensBuyBet.state = .Off
+			tensBuyBet.betState = .Off
 			tensBuyBet.odds = 2
 			tensBuyBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(tensBuyBet)
@@ -193,9 +194,9 @@ extension GameScene {
 			print("TensBuyBet not found")
 		}
 
-		if let SnakeEyesBet = gameTable?.childNode(withName: "SnakeEyesBet") as? Bet {
+		if let SnakeEyesBet = gameTable?.childNode(withName: "SnakeEyesBet") as? TableBet {
 			snakeEyesBet = SnakeEyesBet
-			snakeEyesBet.state = .Off
+			snakeEyesBet.betState = .Off
 			snakeEyesBet.odds = 30
 			snakeEyesBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(snakeEyesBet)
@@ -204,9 +205,9 @@ extension GameScene {
 			print("Snake Eyes not found")
 		}
 
-		if let BoxCarsBet = gameTable?.childNode(withName: "BoxCarsBet") as? Bet {
+		if let BoxCarsBet = gameTable?.childNode(withName: "BoxCarsBet") as? TableBet {
 			boxCarsBet = BoxCarsBet
-			boxCarsBet.state = .Off
+			boxCarsBet.betState = .Off
 			boxCarsBet.odds = 30
 			boxCarsBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(boxCarsBet)
@@ -215,9 +216,9 @@ extension GameScene {
 			print("Box Cars not found")
 		}
 
-		if let SevenBet = gameTable?.childNode(withName: "SevenBet") as? Bet {
+		if let SevenBet = gameTable?.childNode(withName: "SevenBet") as? TableBet {
 			sevenBet = SevenBet
-			sevenBet.state = .Off
+			sevenBet.betState = .Off
 			sevenBet.odds = 4
 			sevenBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(sevenBet)
@@ -226,9 +227,9 @@ extension GameScene {
 			print("Seven Bet not found")
 		}
 
-		if let ElevenBet = gameTable?.childNode(withName: "ElevenBet") as? Bet {
+		if let ElevenBet = gameTable?.childNode(withName: "ElevenBet") as? TableBet {
 			elevenBet = ElevenBet
-			elevenBet.state = .Off
+			elevenBet.betState = .Off
 			elevenBet.odds = 15
 			elevenBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(elevenBet)
@@ -237,9 +238,9 @@ extension GameScene {
 			print("Eleven Bet not found")
 		}
 
-		if let HardFourBet = gameTable?.childNode(withName: "HardFourBet") as? Bet {
+		if let HardFourBet = gameTable?.childNode(withName: "HardFourBet") as? TableBet {
 			hardFourBet = HardFourBet
-			hardFourBet.state = .Off
+			hardFourBet.betState = .Off
 			hardFourBet.odds = 7
 			hardFourBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(hardFourBet)
@@ -248,9 +249,9 @@ extension GameScene {
 			print("Hard Fours Bet not found")
 		}
 
-		if let HardSixBet = gameTable?.childNode(withName: "HardSixBet") as? Bet {
+		if let HardSixBet = gameTable?.childNode(withName: "HardSixBet") as? TableBet {
 			hardSixBet = HardSixBet
-			hardSixBet.state = .Off
+			hardSixBet.betState = .Off
 			hardSixBet.odds = 9
 			hardSixBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(hardSixBet)
@@ -259,9 +260,9 @@ extension GameScene {
 			print("Hard Sixes Bet not found")
 		}
 
-		if let HardTenBet = gameTable?.childNode(withName: "HardTenBet") as? Bet {
+		if let HardTenBet = gameTable?.childNode(withName: "HardTenBet") as? TableBet {
 			hardTenBet = HardTenBet
-			hardTenBet.state = .Off
+			hardTenBet.betState = .Off
 			hardTenBet.odds = 7
 			hardTenBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(hardTenBet)
@@ -270,9 +271,9 @@ extension GameScene {
 			print("Hard Fours Bet not found")
 		}
 
-		if let HardEightBet = gameTable?.childNode(withName: "HardEightBet") as? Bet {
+		if let HardEightBet = gameTable?.childNode(withName: "HardEightBet") as? TableBet {
 			hardEightBet = HardEightBet
-			hardEightBet.state = .Off
+			hardEightBet.betState = .Off
 			hardEightBet.odds = 9
 			hardEightBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(hardEightBet)
@@ -281,9 +282,9 @@ extension GameScene {
 			print("Hard Eight Bet not found")
 		}
 
-		if let AnyCrapsBet = gameTable?.childNode(withName: "AnyCrapsBet") as? Bet {
+		if let AnyCrapsBet = gameTable?.childNode(withName: "AnyCrapsBet") as? TableBet {
 			anyCrapsBet = AnyCrapsBet
-			anyCrapsBet.state = .Off
+			anyCrapsBet.betState = .Off
 			anyCrapsBet.odds = 7
 			anyCrapsBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(anyCrapsBet)
@@ -292,9 +293,9 @@ extension GameScene {
 			print("Any Craps Bet not found")
 		}
 
-		if let Craps3Bet = gameTable?.childNode(withName: "Craps3Bet") as? Bet {
+		if let Craps3Bet = gameTable?.childNode(withName: "Craps3Bet") as? TableBet {
 			craps3Bet = Craps3Bet
-			craps3Bet.state = .Off
+			craps3Bet.betState = .Off
 			craps3Bet.odds = 15
 			craps3Bet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(craps3Bet)
@@ -303,9 +304,9 @@ extension GameScene {
 			print("Craps 3 Bet not found")
 		}
 
-		if let ComeBet = gameTable?.childNode(withName: "ComeBet") as? Bet {
+		if let ComeBet = gameTable?.childNode(withName: "ComeBet") as? TableBet {
 			comeBet = ComeBet
-			comeBet.state = .Off
+			comeBet.betState = .Off
 			comeBet.odds = 1
 			comeBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(comeBet)
@@ -313,9 +314,9 @@ extension GameScene {
 			print("Come Bet not found")
 		}
 
-		if let DontComeBet = gameTable?.childNode(withName: "DontComeBet") as? Bet {
+		if let DontComeBet = gameTable?.childNode(withName: "DontComeBet") as? TableBet {
 			dontComeBet = DontComeBet
-			dontComeBet.state = .Off
+			dontComeBet.betState = .Off
 			dontComeBet.odds = 1
 			dontComeBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(dontComeBet)
@@ -323,9 +324,9 @@ extension GameScene {
 			print("Don't Come Bet not found")
 		}
 
-		if let DontPassBet = gameTable?.childNode(withName: "DontPassBet") as? Bet {
+		if let DontPassBet = gameTable?.childNode(withName: "DontPassBet") as? TableBet {
 			dontPassBet = DontPassBet
-			dontPassBet.state = .Off
+			dontPassBet.betState = .Off
 			dontPassBet.odds = 1
 			dontPassBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(dontPassBet)
@@ -333,9 +334,9 @@ extension GameScene {
 			print("Don't Pass Bet not found")
 		}
 
-		if let FieldBet = gameTable?.childNode(withName: "FieldBet") as? Bet {
+		if let FieldBet = gameTable?.childNode(withName: "FieldBet") as? TableBet {
 			fieldBet = FieldBet
-			fieldBet.state = .Off
+			fieldBet.betState = .Off
 			fieldBet.odds = 1
 			fieldBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(fieldBet)
@@ -344,9 +345,9 @@ extension GameScene {
 			print("Field Bet not found")
 		}
 
-		if let PassLineBet = gameTable?.childNode(withName: "PassLineBet") as? Bet {
+		if let PassLineBet = gameTable?.childNode(withName: "PassLineBet") as? TableBet {
 			passLineBet = PassLineBet
-			passLineBet.state = .Off
+			passLineBet.betState = .Off
 			passLineBet.odds = 1
 			passLineBet.placedBetPosition = CGPoint(x: 0, y: 0)
 			availableBets.append(passLineBet)
@@ -533,31 +534,44 @@ extension GameScene {
 		chipTotalLabel.text = String(chipTotal)
 		gameTable?.addChild(chipTotalLabel)
 	}
-
+/*
 	func setupTotalChipsBetLabel() {
 		//chipsBetTotalLabel = SKLabelNode(fontNamed: "Optima")
 		chipsBetTotalLabel.fontColor = UIColor.yellow
 		chipsBetTotalLabel.fontSize = 16
 		chipsBetTotalLabel.horizontalAlignmentMode = .center
 		chipsBetTotalLabel.verticalAlignmentMode = .center
-		chipsBetTotalLabel.position = CGPoint(x: -285, y: -175)
+		chipsBetTotalLabel.position = CGPoint(x: -300, y: -175)
 		chipsBetTotalLabel.zPosition = 20
-		chipsBetTotal = 0
-		chipsBetTotalLabel.text = String(chipsBetTotal)
+		//chipsBetTotal = 0
+		//chipsBetTotalLabel.text = String(chipsBetTotal)
 		gameTable?.addChild(chipsBetTotalLabel)
-	}
+	}*/
 
 	func setupTotalAmountWonOrLostLabel() {
-		totalAmountWonOrLostLabel = SKLabelNode(fontNamed: "Optima")
+		//totalAmountWonOrLostLabel = SKLabelNode(fontNamed: "Optima")
 		totalAmountWonOrLostLabel.fontColor = UIColor.yellow
 		totalAmountWonOrLostLabel.fontSize = 16
 		totalAmountWonOrLostLabel.horizontalAlignmentMode = .center
 		totalAmountWonOrLostLabel.verticalAlignmentMode = .center
-		totalAmountWonOrLostLabel.position = CGPoint(x: -200, y: -175)
+		totalAmountWonOrLostLabel.position = CGPoint(x: -300, y: -175)
 		totalAmountWonOrLostLabel.zPosition = 20
-		totalAmountWonOrLost = 0
-		totalAmountWonOrLostLabel.text = String(totalAmountWonOrLost)
+		//totalAmountWonOrLost = 0
+		totalAmountWonOrLostLabel.text = "Amount Won/Lost: \(totalChipsWonOrLost)"
 		gameTable?.addChild(totalAmountWonOrLostLabel)
+	}
+
+	func setupCurrentPointLabel() {
+		//currentPointLabel = SKLabelNode(fontNamed: "Optima")
+		currentPointLabel.fontColor = UIColor.yellow
+		currentPointLabel.fontSize = 16
+		currentPointLabel.horizontalAlignmentMode = .center
+		currentPointLabel.verticalAlignmentMode = .center
+		currentPointLabel.position = CGPoint(x: -200, y: -175)
+		currentPointLabel.zPosition = 20
+		currentPoint = 0
+		currentPointLabel.text = String("Current Point: \(currentPoint)")
+		gameTable?.addChild(currentPointLabel)
 	}
 }
 
