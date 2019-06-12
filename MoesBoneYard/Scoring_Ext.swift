@@ -11,6 +11,7 @@ import UIKit
 
 extension GameScene {
 	func rollDice(dice: [Dice]) {
+		//displayBets()
 		dieTotal = 0
 		dieValues.removeAll()
 		let currentDice = dice
@@ -44,13 +45,6 @@ extension GameScene {
 			}
 		}
 		dieTotal = die1.value + die2.value
-		print("Dice Total: \(dieTotal)")
-		for bet in availableBets where bet.chipsWagered.count > 0 {
-			print("current bet: \(bet.name!)")
-			for chip in bet.chipsWagered {
-				print("chips wagered: \(chip.value)")
-			}
-		}
 		evaluateRoll()
 	}
 
@@ -81,6 +75,10 @@ extension GameScene {
 	}
 
 	func evaluateRoll() {
+		
+
+
+
 		if comeOutRoll {
 			print("Come Out Roll")
 			comeOutRoll = false
@@ -91,9 +89,8 @@ extension GameScene {
 				print("Point Matched")
 				thePointBet = getPointBet()
 				handleWinningPointRoll()
-				thePoint = 0
 			}
-			print("comebetchipswageredcount: \(comeBet.chipsWagered.count)")
+			//print("comebetchipswageredcount: \(comeBet.chipsWagered.count)")
 			if comeBet.chipsWagered.count > 0 {
 				switch dieTotal {
 				case 7,11:
@@ -205,127 +202,126 @@ extension GameScene {
 			puckState = .Off
 		} else if points.contains(dieTotal){
 			handlePointRollBets()
-		} else {
-			for placedBet in placedBets {
-				currentBet = placedBet
-				for chip in currentBet.chipsWagered {
-					theChip = chip
-					switch currentBet {
-					case comeBet:
-						if craps.contains(dieTotal) {
-							removeBet(betName: currentBet.name!)
-						} else if wins.contains(dieTotal) {
-							processBet(bet: currentBet)
-						} else if points.contains(dieTotal) {
-							switch thePoint {
-							case 4:
-								if fours.chipsWagered.count > 0 {
-									processBet(bet: fours)
-								}
-								if comeBet.chipsWagered.count > 0 {
-									for chip in comeBet.chipsWagered {
-										moveChipToBetLocation(bet: fours, chip: chip)
-									}
-								}
-							case 5:
-								if fives.chipsWagered.count > 0 {
-									processBet(bet: fives)
-								}
-								if comeBet.chipsWagered.count > 0 {
-									for chip in comeBet.chipsWagered {
-										moveChipToBetLocation(bet: fives, chip: chip)
-									}
-								}
-							case 6:
-								if sixes.chipsWagered.count > 0 {
-									processBet(bet: sixes)
-								}
-								if comeBet.chipsWagered.count > 0 {
-									for chip in comeBet.chipsWagered {
-										moveChipToBetLocation(bet: sixes, chip: chip)
-									}
-								}
-							case 8:
-								if eights.chipsWagered.count > 0 {
-									processBet(bet: eights)
-								}
-								if comeBet.chipsWagered.count > 0 {
-									for chip in comeBet.chipsWagered {
-										moveChipToBetLocation(bet: eights, chip: chip)
-									}
-								}
-							case 9:
-								if nines.chipsWagered.count > 0 {
-									processBet(bet: nines)
-								}
-								if comeBet.chipsWagered.count > 0 {
-									for chip in comeBet.chipsWagered {
-										moveChipToBetLocation(bet: nines, chip: chip)
-									}
-								}
-							case 10:
-								if tens.chipsWagered.count > 0 {
-									processBet(bet: tens)
-								}
-								if comeBet.chipsWagered.count > 0 {
-									for chip in comeBet.chipsWagered {
-										moveChipToBetLocation(bet: tens, chip: chip)
-									}
-								}
-							default:
-								break
+		}
+		for placedBet in placedBets {
+			currentBet = placedBet
+			for chip in currentBet.chipsWagered {
+				theChip = chip
+				switch currentBet {
+				case comeBet:
+					if craps.contains(dieTotal) {
+						removeBet(betName: currentBet.name!)
+					} else if wins.contains(dieTotal) {
+						processBet(bet: currentBet)
+					} else if points.contains(dieTotal) {
+						switch thePoint {
+						case 4:
+							if fours.chipsWagered.count > 0 {
+								processBet(bet: fours)
 							}
-						}
-					case anyCrapsBet:
-						if craps.contains(dieTotal) {
-							processBet(bet: anyCrapsBet)
-						} else {
-							removeBet(betName: currentBet.name!)
-						}
-					case snakeEyesBet:
-						if dieTotal == 2 {
-							processBet(bet: snakeEyesBet)
-						} else {
-							removeBet(betName: currentBet.name!)
-						}
-					case craps3Bet:
-						if dieTotal == 3 {
-							processBet(bet: craps3Bet)
-						} else {
-							removeBet(betName: currentBet.name!)
-						}
-					case fieldBet:
-						if dieTotal == 2 || dieTotal == 12 {
-							chipTotal += theChip.value
-							chipTotal += Int(Double(theChip.value) * currentBet.odds) * 2
-							removeBet(betName: currentBet.name!)
-							if let idx = placedBets.firstIndex(where: { $0.name == currentBet.name! }) {
-								placedBets.remove(at: idx)
+							if comeBet.chipsWagered.count > 0 {
+								for chip in comeBet.chipsWagered {
+									moveChipToBetLocation(bet: fours, chip: chip)
+								}
 							}
-							currentBet.chipsWagered.removeAll()
-						} else {
-							processBet(bet: fieldBet)
+						case 5:
+							if fives.chipsWagered.count > 0 {
+								processBet(bet: fives)
+							}
+							if comeBet.chipsWagered.count > 0 {
+								for chip in comeBet.chipsWagered {
+									moveChipToBetLocation(bet: fives, chip: chip)
+								}
+							}
+						case 6:
+							if sixes.chipsWagered.count > 0 {
+								processBet(bet: sixes)
+							}
+							if comeBet.chipsWagered.count > 0 {
+								for chip in comeBet.chipsWagered {
+									moveChipToBetLocation(bet: sixes, chip: chip)
+								}
+							}
+						case 8:
+							if eights.chipsWagered.count > 0 {
+								processBet(bet: eights)
+							}
+							if comeBet.chipsWagered.count > 0 {
+								for chip in comeBet.chipsWagered {
+									moveChipToBetLocation(bet: eights, chip: chip)
+								}
+							}
+						case 9:
+							if nines.chipsWagered.count > 0 {
+								processBet(bet: nines)
+							}
+							if comeBet.chipsWagered.count > 0 {
+								for chip in comeBet.chipsWagered {
+									moveChipToBetLocation(bet: nines, chip: chip)
+								}
+							}
+						case 10:
+							if tens.chipsWagered.count > 0 {
+								processBet(bet: tens)
+							}
+							if comeBet.chipsWagered.count > 0 {
+								for chip in comeBet.chipsWagered {
+									moveChipToBetLocation(bet: tens, chip: chip)
+								}
+							}
+						default:
+							break
 						}
-					case hardSixBet, hardFourBet, hardTenBet, hardEightBet:
-						handleHardWayBets()
-					case sevenBet:
-						if dieTotal == 7 {
-							processBet(bet: sevenBet)
-						}
-						removeBet(betName: currentBet.name!)
-					case boxCarsBet:
-						if dieTotal == 12 {
-							processBet(bet: boxCarsBet)
-						}
-						removeBet(betName: currentBet.name!)
-					case elevenBet:
-						if dieTotal == 11 {
-							processBet(bet: elevenBet)
-						}
-						removeBet(betName: currentBet.name!)
-					default:
-						break
 					}
+				case anyCrapsBet:
+					if craps.contains(dieTotal) {
+						processBet(bet: anyCrapsBet)
+					} else {
+						removeBet(betName: currentBet.name!)
+					}
+				case snakeEyesBet:
+					if dieTotal == 2 {
+						processBet(bet: snakeEyesBet)
+					} else {
+						removeBet(betName: currentBet.name!)
+					}
+				case craps3Bet:
+					if dieTotal == 3 {
+						processBet(bet: craps3Bet)
+					} else {
+						removeBet(betName: currentBet.name!)
+					}
+				case fieldBet:
+					if dieTotal == 2 || dieTotal == 12 {
+						chipTotal += theChip.value
+						chipTotal += Int(Double(theChip.value) * currentBet.odds) * 2
+						removeBet(betName: currentBet.name!)
+						if let idx = placedBets.firstIndex(where: { $0.name == currentBet.name! }) {
+							placedBets.remove(at: idx)
+						}
+						currentBet.chipsWagered.removeAll()
+					} else {
+						processBet(bet: fieldBet)
+					}
+				case hardSixBet, hardFourBet, hardTenBet, hardEightBet:
+					handleHardWayBets()
+				case sevenBet:
+					if dieTotal == 7 {
+						processBet(bet: sevenBet)
+					}
+					removeBet(betName: currentBet.name!)
+				case boxCarsBet:
+					if dieTotal == 12 {
+						processBet(bet: boxCarsBet)
+					}
+					removeBet(betName: currentBet.name!)
+				case elevenBet:
+					if dieTotal == 11 {
+						processBet(bet: elevenBet)
+					}
+					removeBet(betName: currentBet.name!)
+				default:
+					break
 				}
 			}
 		}
@@ -401,16 +397,25 @@ extension GameScene {
 		}
 	}
 
+	func removePlacedBet(bet: TableBet) {
+		for placedBet in placedBets where placedBet.contains(touchLocation!) {
+			if let idx = placedBets.firstIndex(where: { $0 == placedBet }) {
+				placedBets.remove(at: idx)
+			}
+			placedBet.chipsWagered.removeLast()
+			var placedBetChildren = placedBet.children
+			placedBetChildren.removeLast()
+		}
+	}
+
 	func validatePlacedBet(bet: TableBet) -> Bool {
 		var result = Bool()
-		if comeOutRoll == false {
-			if bet.name == "PassLineBet" || bet.name == "DontPassBet" {
-				result = false
-			} else {
+		if comeOutRoll {
+			if bet != comeBet && bet != dontComeBet {
 				result = true
+			} else {
+				result = false
 			}
-		} else if bet.name == "ComeBet" || bet.name == "DontComeBet" {
-			result = false
 		} else {
 			result = true
 		}
@@ -418,10 +423,12 @@ extension GameScene {
 	}
 
 	func chipTouched(name: String) {
-		for chip in chips where chip.name == name {
-			selectedChip = chip
-			selectedChipValue = selectedChip.value
-			selectedChipTexture = selectedChip.texture!
+		let chipName = name
+		for chip in chips where chip.name == chipName {
+			let chipPosition = chip.position
+			if (touchedNode?.contains(chipPosition))! {
+				print("chip: \(chip.name!) was touched")
+			}
 		}
 	}
 
@@ -460,12 +467,12 @@ extension GameScene {
 		}
 
 		newPosition = CGPoint(x: newPosition.x + 0.25, y: newPosition.y + 1)
-		let placedBet = SKSpriteNode(texture: currentChip.texture, size: CGSize(width: 24, height: 24))
-		placedBet.position = newPosition
-		placedBet.name = currentBet.name
+		let placedChip = SKSpriteNode(texture: currentChip.texture, size: CGSize(width: 24, height: 24))
+		placedChip.position = newPosition
+		placedChip.name = currentChip.name
 		currentBet.placedBetPosition = newPosition
-		currentBet.addChild(placedBet)
-		placedBet.zPosition = currentBet.zPosition
+		currentBet.addChild(placedChip)
+		placedChip.zPosition = currentBet.zPosition
 		currentBet.zPosition += 1
 		currentBet.betState = .On
 	}
@@ -502,7 +509,6 @@ extension GameScene {
 	}
 
 	func handleWinningPointRoll() {
-		thePointBet = getPointBet()
 		switch thePoint {
 		case 4:
 			if passLineBet.chipsWagered.count > 0 {
@@ -516,7 +522,7 @@ extension GameScene {
 				}
 			}
 			processBet(bet: fours)
-			print("\(fours.name!) bet wins")
+			//print("\(fours.name!) bet wins")
 		case 5:
 			if passLineBet.chipsWagered.count > 0 {
 				fives.chipsWagered = passLineBet.chipsWagered
@@ -529,7 +535,7 @@ extension GameScene {
 				}
 			}
 			processBet(bet: fives)
-			print("\(fives.name!) bet wins")
+			//print("\(fives.name!) bet wins")
 		case 6:
 			if passLineBet.chipsWagered.count > 0 {
 				sixes.chipsWagered = passLineBet.chipsWagered
@@ -542,7 +548,7 @@ extension GameScene {
 				}
 			}
 			processBet(bet: sixes)
-			print("\(sixes.name!) bet wins")
+			//print("\(sixes.name!) bet wins")
 		case 8:
 			if passLineBet.chipsWagered.count > 0 {
 				eights.chipsWagered += passLineBet.chipsWagered
@@ -555,7 +561,7 @@ extension GameScene {
 				}
 			}
 			processBet(bet: eights)
-			print("\(eights.name!) bet wins")
+			//print("\(eights.name!) bet wins")
 		case 9:
 			if passLineBet.chipsWagered.count > 0 {
 				nines.chipsWagered += passLineBet.chipsWagered
@@ -568,7 +574,7 @@ extension GameScene {
 				}
 			}
 			processBet(bet: nines)
-			print("\(nines.name!) bet wins")
+			//print("\(nines.name!) bet wins")
 		case 10:
 			if passLineBet.chipsWagered.count > 0 {
 				tens.chipsWagered += passLineBet.chipsWagered
@@ -581,7 +587,7 @@ extension GameScene {
 				}
 			}
 			processBet(bet: tens)
-			print("\(tens.name!) bet wins")
+			//print("\(tens.name!) bet wins")
 		default:
 			break
 		}
@@ -629,7 +635,7 @@ extension GameScene {
 
 	func handlePointRollBets() {
 		for pointBet in pointsBets {
-			print("point bet chips count: \(pointBet.chipsWagered.count)")
+			//print("point bet chips count: \(pointBet.chipsWagered.count)")
 			if pointBet.chipsWagered.count > 0 {
 				processBet(bet: pointBet)
 			}
@@ -666,10 +672,10 @@ extension GameScene {
 	}
 
 	func processBet(bet: TableBet) {
-		print("bet Name: \(bet.name!), bet.chipsWagered count: \(bet.chipsWagered.count)")
+		//print("bet Name: \(bet.name!), bet.chipsWagered count: \(bet.chipsWagered.count)")
 		if bet.chipsWagered.count > 0 {
 			for chip in bet.chipsWagered {
-				print("chip: \(chip.name!)")
+				//print("chip: \(chip.name!)")
 				chipTotal += chip.value
 				chipTotal += Int(Double(chip.value) * bet.odds)
 			}

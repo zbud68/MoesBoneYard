@@ -43,7 +43,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			currentChipTotal = chipTotal
 			totalChipsWonOrLost = (previousChipTotal - currentChipTotal)
 			chipTotalLabel.text = String(Int(chipTotal))
-			print("Chip Total: \(chipTotal)")
+			//print("Chip Total: \(chipTotal)")
 		}
 	}
 /*
@@ -85,6 +85,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 			case .Off:
 				gamePuck.texture = gamePuck.offTexture
 				gamePuck.position = gamePuck.homePosition
+				thePoint = 0
 			}
 		}
 	}
@@ -224,6 +225,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 	override func didMove(to view: SKView) {
         setupGameTable()
+		gameStart()
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -239,48 +241,65 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 	func handleTouches(TouchedNode: SKNode) {
 		var currentBet = TableBet()
-		var nodeName = ""
+		var nodeName: String!
 		let touchedNode = TouchedNode
+		var chipsBet: [Chip]?
+
 		if let name = touchedNode.name {
 			nodeName = name
-			for chip in chips where chip.name == nodeName {
-				selectedChip = chip
-				selectedChipValue = chip.value
-				selectedChipTexture = chip.texture!
-			}
-			for bet in availableBets {
-				currentBet = bet
-				if nodeName == currentBet.name {
-					placeBet(bet: currentBet)
-				}
-			}
+		}
 
-			//for chip in currentBet.chipsWagered {
-				//print("chip placed: \(chip.value)")
-			//}
-
-			for egg in easterEggs {
-				if nodeName == egg.name {
-					let currentEgg = egg
-					let stackValue = egg.stackValue
-					if currentEgg.name == nodeName && stackValue == selectedChip.value {
-						currentEgg.status = .On
-					} else {
-						currentEgg.status = .Off
+		for bet in availableBets {
+			if let ChipsBet = bet.children as? [Chip] {
+				chipsBet = ChipsBet
+			}
+			if chipsBet?.isEmpty == false {
+				for chip in chipsBet! {
+					print("chip name: \(chip.name!)")
+					if chip.name == nodeName {
+						print("chip found by name: \(chip.name!)")
+					}
+					if chip.contains(touchedNode) {
+						print("chip found by node: \(chip.name!)")
 					}
 				}
 			}
+		}
 
-			switch nodeName {
-			case "RollButton":
-				print("Roll Button Touched")
-				rollButtonTouched()
-			case "ClearBetsButton":
-				clearBetsButtonTouched()
-				print("Clear Bets Button")
-			default:
-				break
+
+		for chip in chips where chip.name == nodeName {
+			selectedChip = chip
+			selectedChipValue = chip.value
+			selectedChipTexture = chip.texture!
+		}
+		for bet in availableBets {
+			currentBet = bet
+			if nodeName == currentBet.name {
+				placeBet(bet: currentBet)
 			}
+		}
+
+		for egg in easterEggs {
+			if nodeName == egg.name {
+				let currentEgg = egg
+				let stackValue = egg.stackValue
+				if currentEgg.name == nodeName && stackValue == selectedChip.value {
+					currentEgg.status = .On
+				} else {
+					currentEgg.status = .Off
+				}
+			}
+		}
+
+		switch nodeName {
+		case "RollButton":
+			print("Roll Button Touched")
+			rollButtonTouched()
+		case "ClearBetsButton":
+			clearBetsButtonTouched()
+			print("Clear Bets Button")
+		default:
+			break
 		}
 	}
 
