@@ -13,6 +13,10 @@ enum BetState {
 	case On, Off
 }
 
+enum BetType {
+	case Pass, DontPass
+}
+
 class TableBet: SKSpriteNode {
 	var betState = BetState.Off {
 		willSet {
@@ -25,6 +29,7 @@ class TableBet: SKSpriteNode {
 		}
 	}
 
+	var betType: BetType = BetType.Pass
 	var odds: Double = Double()
 	var placedBetPosition: CGPoint = CGPoint()
 	var puckPosition: CGPoint = CGPoint()

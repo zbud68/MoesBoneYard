@@ -11,7 +11,6 @@
 		4D212734229952A70069DA5D /* Puck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D212733229952A70069DA5D /* Puck.swift */; };
 		4D55FAA522936E56008FCB91 /* Chip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D55FAA422936E56008FCB91 /* Chip.swift */; };
 		4D596DC02294C66B008940DB /* TableBet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D596DBF2294C66B008940DB /* TableBet.swift */; };
-		4D6E9768229F8EED0033C82C /* GameConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E9767229F8EED0033C82C /* GameConstants.swift */; };
 		4D6E978F229F8FE30033C82C /* GameSetup_Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E978E229F8FE30033C82C /* GameSetup_Ext.swift */; };
 		4D6E9791229F901A0033C82C /* GameControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E9790229F901A0033C82C /* GameControl.swift */; };
 		4D6E9795229F905D0033C82C /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 4D6E9794229F905D0033C82C /* GameScene.sks */; };
@@ -21,6 +20,7 @@
 		4D6E97A1229F91360033C82C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E97A0229F91360033C82C /* AppDelegate.swift */; };
 		4D6E97A3229F913C0033C82C /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E97A2229F913C0033C82C /* GameViewController.swift */; };
 		4D8140DB22912E6F00E500D8 /* Scoring_Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8140DA22912E6F00E500D8 /* Scoring_Ext.swift */; };
+		4D82320022B0A02F0069BD59 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D8231FF22B0A02E0069BD59 /* HelperFunctions.swift */; };
 		4D888A91228FDDC800E9F3D0 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D888A90228FDDC800E9F3D0 /* GameScene.swift */; };
 		4D888A98228FDDCC00E9F3D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D888A97228FDDCC00E9F3D0 /* Assets.xcassets */; };
 		4D888B70228FE27D00E9F3D0 /* Dice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D888B6E228FE27D00E9F3D0 /* Dice.swift */; };
@@ -32,7 +32,6 @@
 		4D212733229952A70069DA5D /* Puck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puck.swift; sourceTree = "<group>"; };
 		4D55FAA422936E56008FCB91 /* Chip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chip.swift; sourceTree = "<group>"; };
 		4D596DBF2294C66B008940DB /* TableBet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableBet.swift; sourceTree = "<group>"; };
-		4D6E9767229F8EED0033C82C /* GameConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameConstants.swift; sourceTree = "<group>"; };
 		4D6E978E229F8FE30033C82C /* GameSetup_Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSetup_Ext.swift; sourceTree = "<group>"; };
 		4D6E9790229F901A0033C82C /* GameControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameControl.swift; sourceTree = "<group>"; };
 		4D6E9794229F905D0033C82C /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -42,6 +41,7 @@
 		4D6E97A0229F91360033C82C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4D6E97A2229F913C0033C82C /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		4D8140DA22912E6F00E500D8 /* Scoring_Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scoring_Ext.swift; sourceTree = "<group>"; };
+		4D8231FF22B0A02E0069BD59 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		4D888A87228FDDC800E9F3D0 /* MoesBoneYard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoesBoneYard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D888A90228FDDC800E9F3D0 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		4D888A97228FDDCC00E9F3D0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -64,7 +64,7 @@
 		4D55FAA622939611008FCB91 /* Helper Files */ = {
 			isa = PBXGroup;
 			children = (
-				4D6E9767229F8EED0033C82C /* GameConstants.swift */,
+				4D8231FF22B0A02E0069BD59 /* HelperFunctions.swift */,
 			);
 			path = "Helper Files";
 			sourceTree = "<group>";
@@ -224,10 +224,10 @@
 				4D6E97A3229F913C0033C82C /* GameViewController.swift in Sources */,
 				4D888B70228FE27D00E9F3D0 /* Dice.swift in Sources */,
 				4D98F7E022ADBEF4003BF9CA /* EasterEgg.swift in Sources */,
+				4D82320022B0A02F0069BD59 /* HelperFunctions.swift in Sources */,
 				4D8140DB22912E6F00E500D8 /* Scoring_Ext.swift in Sources */,
 				4D596DC02294C66B008940DB /* TableBet.swift in Sources */,
 				4D6E978F229F8FE30033C82C /* GameSetup_Ext.swift in Sources */,
-				4D6E9768229F8EED0033C82C /* GameConstants.swift in Sources */,
 				4D55FAA522936E56008FCB91 /* Chip.swift in Sources */,
 				4D212734229952A70069DA5D /* Puck.swift in Sources */,
 			);
