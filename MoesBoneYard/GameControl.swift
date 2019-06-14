@@ -44,7 +44,7 @@ extension GameScene {
         for pointBet in pointsBets {
             pointBet.betState = .Off
             pointBet.chipsWagered.removeAll()
-            pointBet.removeAllChildren()
+            //pointBet.removeAllChildren()
         }
 		comeOutRoll = true
     }

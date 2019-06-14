@@ -124,10 +124,12 @@ extension GameScene {
 		currentBet.betState = .On
 	}
 
+	/*
 	func calcCurrentRollResults() {
 		currentRollResults = (currentChipTotal - previousChipTotal)
 		previousChipTotal = currentChipTotal
 	}
+	*/
 
 	func wasEasterEggFound() {
 		easterEggFound = false

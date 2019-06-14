@@ -11,13 +11,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MoesBoneYard/Scoring_Ext.swift"
-            timestampString = "582093999.8537641"
+            timestampString = "582221579.75911"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "55"
             endingLineNumber = "55"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            landmarkName = "evaluateRoll()"
+            landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
                   ActionExtensionID = "Xcode.BreakpointAction.Log">

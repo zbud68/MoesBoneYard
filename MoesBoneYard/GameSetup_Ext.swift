@@ -27,7 +27,24 @@ extension GameScene {
         setupTotalChipCountLabel()
         setupChipStacks()
         setupCurrentPointLabel()
+		setupTotalAmountWonOrLostLabel()
     }
+
+	func fadeOutGameLabel() {
+		var gameLabel: SKLabelNode = SKLabelNode()
+		if let GameLabel = self.childNode(withName: "GameLabel") as? SKLabelNode {
+			gameLabel = GameLabel
+		} else {
+			print("Game Label not found")
+		}
+
+		var fadeOut = SKAction()
+		if let FadeOut = SKAction(named: "FadeOutGameLabel") {
+			fadeOut = FadeOut
+		} else {
+			print("FadeOut Action not found")
+		}
+	}
 
     func setupChipStacks() {
         if let ChipStack_1 = gameTable?.childNode(withName: "ChipStack_1") as? EasterEgg {
@@ -348,7 +365,7 @@ extension GameScene {
 
     func setupBetArrays() {
         singleRollBets = [snakeEyesBet, boxCarsBet, craps3Bet, elevenBet, sevenBet, fieldBet, anyCrapsBet]
-        pointRollBets = [fours, fives, sixes, eights, nines, tens]
+        pointsBets = [fours, fives, sixes, eights, nines, tens]
         hardWayBets = [hardFourBet, hardSixBet, hardEightBet, hardTenBet]
 		buyBets = [foursBuyBet, fivesBuyBet, sixesBuyBet, eightsBuyBet, ninesBuyBet, tensBuyBet]
     }
@@ -522,7 +539,13 @@ extension GameScene {
         gameTable?.addChild(chipTotalLabel)
     }
 
-    func setupTotalAmountWonOrLostLabel() {
+	func setupTotalAmountWonOrLostLabel() {
+		if var WinLossLabel: SKLabelNode = gameTable?.childNode(withName: "WinLossLabel") as? SKLabelNode {
+			WinLossLabel = totalAmountWonOrLostLabel
+			WinLossLabel.text = "0"
+		} else {
+			print("Win/Loss Label not found")
+		}
         totalAmountWonOrLostLabel.fontColor = UIColor.yellow
         totalAmountWonOrLostLabel.fontSize = 16
         totalAmountWonOrLostLabel.horizontalAlignmentMode = .center
@@ -530,7 +553,7 @@ extension GameScene {
         totalAmountWonOrLostLabel.position = CGPoint(x: -300, y: -175)
         totalAmountWonOrLostLabel.zPosition = 20
         totalAmountWonOrLostLabel.text = "Amount Won/Lost: \(totalChipsWonOrLost)"
-        gameTable?.addChild(totalAmountWonOrLostLabel)
+        //gameTable?.addChild(totalAmountWonOrLostLabel)
     }
 
     func setupCurrentPointLabel() {

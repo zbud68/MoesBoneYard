@@ -43,7 +43,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 	//Win-Loss Label - Shows the amount won or lost in the current round
     var totalAmountWonOrLostLabel: SKLabelNode = SKLabelNode(fontNamed: "Optima")
-    var currentRollResults: Int = 0 {
+    var totalChipsWonOrLost: Int = 0 {
         didSet {
             totalAmountWonOrLostLabel.text = "Amount Won or Lost: \(totalChipsWonOrLost))"
         }
@@ -121,6 +121,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var hardWayBets: [TableBet] = []
     var currentBets: [TableBet] = []
 	var buyBets: [TableBet] = []
+	var passBets: [TableBet] = []
+	var dontPassBets: [TableBet] = []
 
 
     // MARK: **********  Scoring Variables  **********
@@ -128,7 +130,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var totalBetThisRoll: Int = Int(0)
     var previousChipTotal: Int = Int(10000)
     var currentChipTotal: Int = Int(10000)
-    var totalChipsWonOrLost: Int = Int(0)
+    //var totalChipsWonOrLost: Int = Int(0)
 
 
     // MARK: **********  Chip Variables  **********
@@ -186,6 +188,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	var currentBet = TableBet()
 	
     override func didMove(to view: SKView) {
+		
         setupGameTable()
         gameStart()
     }
@@ -217,7 +220,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         for bet in availableBets {
             currentBet = bet
             if nodeName == currentBet.name {
-                placeBet(bet: currentBet)
+				placeBet(bet: currentBet, chip: selectedChip)
             }
         }
 

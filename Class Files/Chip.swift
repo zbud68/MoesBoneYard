@@ -10,6 +10,8 @@ import SpriteKit
 import UIKit
 
 class Chip: SKSpriteNode {
+
+	var betType: BetType = BetType.Pass
 	var value: Int = Int()
 	var counted: Bool = false
 }
